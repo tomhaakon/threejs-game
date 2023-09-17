@@ -57,7 +57,7 @@ function main() {
   }
 
   const models = {
-    alienBug: { url: 'resources/models/alien-bug/alien-bug.glb' },
+    alienBug: { url: 'public/models/alien-bug/alien-bug.glb' },
   }
   {
     const gltfLoader = new GLTFLoader(manager)
