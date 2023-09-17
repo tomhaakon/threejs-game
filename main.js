@@ -57,7 +57,7 @@ function main() {
   }
 
   const models = {
-    alienBug: { url: 'http://public.tomhaakon.com/public/alien-bug.glb' },
+    alienBug: { url: 'https://public.tomhaakon.com/public/alien-bug.glb' },
   }
   {
     const gltfLoader = new GLTFLoader(manager)
