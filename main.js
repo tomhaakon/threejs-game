@@ -57,7 +57,9 @@ function main() {
   }
 
   const models = {
-    alienBug: { url: './alien-bug.glb' },
+    alienBug: {
+      url: 'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/alien-bug.glb',
+    },
   }
   {
     const gltfLoader = new GLTFLoader(manager)
