@@ -24,9 +24,9 @@ function main() {
   camera.position.set(0, 20, 40)
 
   //controls
-  const controls = new OrbitControls(camera, canvas)
-  controls.target.set(0, 5, 0)
-  controls.update()
+  // const controls = new OrbitControls(camera, canvas)
+  // controls.target.set(0, 5, 0)
+  // controls.update()
 
   //scene
   const scene = new THREE.Scene()
@@ -102,7 +102,7 @@ function main() {
       root.scale.set(objectScale, objectScale, objectScale) // Set the scale of the object
 
       root.position.x = ndx
-      root.position.y = ndx + 5
+      root.position.y = ndx + 18
       root.position.z = ndx + 10
 
       root.rotation.y = Math.PI / 4
@@ -141,9 +141,6 @@ function main() {
 
   window.addEventListener('keydown', (e) => {
     if (e.code == 'Space') {
-      // This checks for both lowercase and uppercase 'E'
-      console.log('E key pressed')
-
       mixerInfos.forEach((mixerInfo) => {
         playNextAction(mixerInfo)
       })
