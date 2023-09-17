@@ -1,0 +1,3 @@
+[build]
+  command = "cp -r ./resources ./build && npm run build"
+  publish = "build"
