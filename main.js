@@ -148,6 +148,11 @@ function main() {
       })
     }
   })
+  window.addEventListener('click', () => {
+    mixerInfos.forEach((mixerInfo) => {
+      playNextAction(mixerInfo)
+    })
+  })
 
   //render functinons
   function resizeRendererToDisplaySize(renderer) {
