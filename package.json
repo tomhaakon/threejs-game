@@ -3,6 +3,7 @@
     "vite": "^4.4.9"
   },
   "dependencies": {
+    "detect-it": "^4.0.1",
     "three": "^0.156.1"
   },
   "scripts": {
