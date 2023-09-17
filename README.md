@@ -1,4 +1,4 @@
-﻿﻿# threejs-init
+﻿﻿# threejs-game
 
 husk dette:
 https://github.com/rafgraph/detect-it
@@ -7,7 +7,6 @@ https://www.mixamo.com/#/
 
 badkend amazon s3, skal prøve supabase
 
-### grunnlag for nye threejs prosjekt
 
 ## mine egne funksjoner
 
