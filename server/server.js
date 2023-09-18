@@ -26,7 +26,11 @@ app.use((req, res, next) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["https://threejs-game.onrender.com", "http://localhost:5173"], // Allow both the deployed client's URL and the local development URL
+    origin: [
+      "https://threejs-game.onrender.com",
+      "http://localhost:5173",
+      "https://game.tomhaakon.com",
+    ], // Allow both the deployed client's URL and the local development URL
     methods: ["GET", "POST"],
     allowedHeaders: ["my-custom-header"],
     credentials: true,
