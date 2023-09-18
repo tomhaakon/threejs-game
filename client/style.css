@@ -67,12 +67,13 @@ body {
   animation: progressanim 2s linear infinite;
 }
 
-#userCount {
-  font-size: 40px;
+#userCountBox {
+  font-size: 20px;
   color: black;
-  position: fixed;
-  bottom: 4rem;
+  position: absolute;
+  top: 1rem;
   right: 1rem;
+  opacity: 50%;
 }
 
 @keyframes progressanim {
