@@ -33,13 +33,20 @@ const io = new Server(server, {
   },
 });
 
+let userCount = 0;
+
 io.on("connection", (socket) => {
   console.log("User connected");
+  userCount++;
+  io.emit("updateUserCount", userCount); // Broadcast to all clients
 
-  // Send a hello message to the connected client
-  socket.emit("hello", "Hello from the server!");
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+    userCount--;
+    io.emit("updateUserCount", userCount); // Broadcast to all clients
+  });
 
-  // your socket.io logic here
+  // ... other socket.io logic
 });
 
 server.listen(3000, () => {
