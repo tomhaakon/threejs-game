@@ -7,6 +7,21 @@ const app = express();
 
 // Enable CORS for all routes
 app.use(cors());
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "https://threejs-game.onrender.com",
+    "http://localhost:5173",
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 const server = http.createServer(app);
 const io = new Server(server, {
