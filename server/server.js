@@ -22,7 +22,10 @@ app.use((req, res, next) => {
   );
   next();
 });
-
+app.use((req, res, next) => {
+  console.log("Origin Header:", req.headers.origin);
+  next();
+});
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
