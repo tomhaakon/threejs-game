@@ -16,13 +16,30 @@ function main() {
   const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
   //camera
+  const root = new THREE.Object3D();
   const fov = 45;
   const aspect = 2;
   const near = 0.1;
   const far = 100;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  camera.position.set(0, 20, 40);
+  //camera.position.set(0, 20, 40);
 
+  const lookDownOffset = -10;
+  const lookAtPosition = new THREE.Vector3(
+    root.position.x,
+    root.position.y - lookDownOffset,
+    root.position.z
+  );
+
+  const offsetDistance = 20;
+  const heightOffset = 30;
+
+  camera.position.set(
+    root.position.x - offsetDistance,
+    root.position.y + heightOffset,
+    root.position.z - offsetDistance
+  );
+  camera.lookAt(lookAtPosition);
   //controls
   // const controls = new OrbitControls(camera, canvas)
   // controls.target.set(0, 5, 0)
@@ -103,9 +120,9 @@ function main() {
 
       root.scale.set(objectScale, objectScale, objectScale); // Set the scale of the object
 
-      root.position.x = ndx;
-      root.position.y = ndx + 18;
-      root.position.z = ndx + 10;
+      root.position.x = ndx + 0;
+      root.position.y = ndx - 0;
+      root.position.z = ndx + 0;
 
       root.rotation.y = Math.PI / 4;
 
@@ -170,6 +187,15 @@ function main() {
 
   let then = 0;
   function render(now) {
+    const relativeCameraOffset = new THREE.Vector3(
+      -offsetDistance,
+      heightOffset,
+      -offsetDistance
+    );
+
+    const cameraOffset = relativeCameraOffset.applyMatrix4(root.matrixWorld);
+    camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
+
     //
     now *= 0.001;
     const deltaTime = now - then;
