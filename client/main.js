@@ -2,13 +2,15 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
+import * as kd from "./js/keydrown";
+import * as detectIt from "detect-it";
 
 //custom imports
 import { sendError } from "./js/errorHandler.js";
 import { sendStatus } from "./js/handleStatus.js";
 
 sendError("loaded", "main.js"); // send msg that main.js is loaded
-
+sendError("device", detectIt.deviceType);
 function main() {
   //
   //canvas
@@ -24,7 +26,7 @@ function main() {
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   //camera.position.set(0, 20, 40);
 
-  const lookDownOffset = -10;
+  const lookDownOffset = -8;
   const lookAtPosition = new THREE.Vector3(
     root.position.x,
     root.position.y - lookDownOffset,
