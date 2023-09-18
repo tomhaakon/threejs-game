@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 
 // Assuming you've already imported and initialized socket.io on the client:
 
-const socket = io("http://localhost:3000");
+const socket = io("https://threejs-game.onrender.com:3000");
 
 socket.on("connect", () => {
   console.log("Connected to the server");
