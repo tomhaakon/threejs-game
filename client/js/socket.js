@@ -7,7 +7,11 @@ const socket = io("https://threejs-game.onrender.com");
 socket.on("connect", () => {
   console.log("Connected to the server");
 });
-
+// Assuming you've already established a socket connection to the server
+socket.on("updateUserCount", (count) => {
+  const userCountElement = document.getElementById("userCount");
+  userCountElement.textContent = count;
+});
 // Listen for the 'hello' event
 socket.on("hello", (message) => {
   console.log(message); // Should log "Hello from the server!"
