@@ -10,6 +10,7 @@ app.use(cors());
 app.use((req, res, next) => {
   const allowedOrigins = [
     "https://threejs-game.onrender.com",
+    "https://game.tomhaakon.com",
     "http://localhost:5173",
   ];
   const origin = req.headers.origin;
