@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { sendError } from "../errorHandler";
+import { sendError } from "./errorHandler";
 // Assuming you've already imported and initialized socket.io on the client:
 
 const socket = io("https://threejs-game.onrender.com");
