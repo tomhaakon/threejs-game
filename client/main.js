@@ -2,7 +2,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
-import * as kd from "./js/keydrown";
+import * as kd from "keydrown";
+
 import * as detectIt from "detect-it";
 
 //custom imports
@@ -19,12 +20,14 @@ function main() {
 
   //camera
   const root = new THREE.Object3D();
+
   const fov = 45;
   const aspect = 2;
   const near = 0.1;
   const far = 100;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  //camera.position.set(0, 20, 40);
+
+  const modelRoot = new THREE.Object3D(); // a new object just for the model
 
   const lookDownOffset = -8;
   const lookAtPosition = new THREE.Vector3(
@@ -42,6 +45,7 @@ function main() {
     root.position.z - offsetDistance
   );
   camera.lookAt(lookAtPosition);
+
   //controls
   // const controls = new OrbitControls(camera, canvas)
   // controls.target.set(0, 5, 0)
@@ -59,16 +63,15 @@ function main() {
     scene.add(light);
     scene.add(light.target);
   }
-
   addLight(5, 5, 2);
   addLight(-5, 5, 5);
 
   //loader
-
-  const manager = new THREE.LoadingManager();
-  manager.onLoad = init;
-
   const progressbarElem = document.querySelector("#progressbar");
+
+  // Define the LoadingManager
+  const manager = new THREE.LoadingManager();
+
   manager.onProgress = (url, itemsLoaded, itemsTotal) => {
     progressbarElem.computedStyleMap.width = `${
       ((itemsLoaded / itemsTotal) * 100) | 0
@@ -104,74 +107,146 @@ function main() {
   }
 
   const mixers = [];
-  const mixerInfos = [];
+  let mixerInfos = [];
 
   function init() {
     //
-    const loadingElem = document.querySelector("#loading");
-    loadingElem.style.display = "none";
+    return new Promise((resolve) => {
+      //
+      const loadingElem = document.querySelector("#loading");
+      loadingElem.style.display = "none";
 
-    prepModelsAndAnimations();
+      prepModelsAndAnimations();
 
-    Object.values(models).forEach((model, ndx) => {
-      const objectScale = 13;
-      const clonedScene = SkeletonUtils.clone(model.gltf.scene);
-      const root = new THREE.Object3D();
-      root.add(clonedScene);
-      scene.add(root);
+      Object.values(models).forEach((model, ndx) => {
+        const objectScale = 13;
+        const clonedScene = SkeletonUtils.clone(model.gltf.scene);
+        const root = new THREE.Object3D();
+        root.add(clonedScene);
+        scene.add(root);
 
-      root.scale.set(objectScale, objectScale, objectScale); // Set the scale of the object
+        modelRoot.add(clonedScene);
+        root.add(modelRoot); // add the model's root to the main root
+        root.scale.set(objectScale, objectScale, objectScale); // Set the scale of the object
 
-      root.position.x = ndx + 0;
-      root.position.y = ndx - 0;
-      root.position.z = ndx + 0;
+        root.position.x = ndx;
+        root.position.y = ndx;
+        root.position.z = ndx;
 
-      root.rotation.y = Math.PI / 4;
+        root.rotation.y = Math.PI / 4;
 
-      const mixer = new THREE.AnimationMixer(clonedScene);
-      //const firstClip = Object.values(model.animations)[2]
-      // const action = mixer.clipAction(firstClip)
-      const actions = Object.values(model.animations).map((clip) => {
-        return mixer.clipAction(clip);
+        const mixer = new THREE.AnimationMixer(clonedScene);
+        const firstClip = Object.values(model.animations)[2];
+        const action = mixer.clipAction(firstClip);
+        const actions = Object.values(model.animations).map((clip) => {
+          return mixer.clipAction(clip);
+        });
+        Object.values(models).forEach((model) => {
+          const animsByName = {};
+          model.gltf.animations.forEach((clip) => {
+            console.log(`Available animation: ${clip.name}`);
+            animsByName[clip.name] = clip;
+          });
+          model.animations = animsByName;
+        });
+        const mixerInfo = {
+          mixer,
+          actions,
+          actionNdx: -1,
+        };
+        ///   console.log(mixerInfo)
+        mixerInfos.push(mixerInfo);
+        // playNextAction(mixerInfo);
+        action.play();
+        mixers.push(mixer);
       });
-      const mixerInfo = {
-        mixer,
-        actions,
-        actionNdx: -1,
-      };
-      ///   console.log(mixerInfo)
-      mixerInfos.push(mixerInfo);
-      playNextAction(mixerInfo);
-      //  action.play()
-      //   mixers.push(mixer)
+
+      setupKeyBindings();
+      setAnimation("Idle");
+      createGround();
+      resolve();
     });
   }
+  manager.onLoad = () => init();
 
-  function playNextAction(mixerInfo) {
-    const { actions, actionNdx } = mixerInfo;
-    const nextActionNdx = (actionNdx + 1) % actions.length;
-    mixerInfo.actionNdx = nextActionNdx;
-    actions.forEach((action, ndx) => {
-      const enabled = ndx === nextActionNdx;
-      action.enabled = enabled;
-      if (enabled) {
-        action.play();
+  console.log("mixerInfos outside init() function", mixerInfos);
+
+  /*
+
+Keybinds
+
+*/
+  function createGround() {
+    // 1. Create a plane geometry. The arguments define the width and height of the plane.
+    const groundGeometry = new THREE.PlaneGeometry(50, 100);
+
+    // 2. Create a material for the plane.
+    const groundMaterial = new THREE.MeshBasicMaterial({ color: "beige" }); // Simple green ground
+
+    // 3. Combine the geometry and material to create a mesh.
+    const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+
+    // 4. Position the mesh. By default, the plane is vertical, so we need to rotate it.
+    groundMesh.rotation.x = -Math.PI / 2; // Rotate the ground to be horizontal
+    groundMesh.position.set(0, 0, 0);
+
+    // 5. Add the mesh to your scene.
+    scene.add(groundMesh);
+  }
+
+  let isRunning = false;
+  let moveForward = false;
+
+  function setupKeyBindings() {
+    kd.W.down(() => {
+      if (!isRunning) {
+        setAnimation("Run");
+        isRunning = true;
+
+        moveForward = true; // Set the flag when W is pressed
+      }
+    });
+
+    kd.W.up(() => {
+      setAnimation("Idle");
+      isRunning = false;
+      moveForward = false; // Clear the flag when W is released
+    });
+    kd.A.down(() => {
+      rotateModel("left");
+    });
+
+    kd.D.down(() => {
+      rotateModel("right");
+    });
+  }
+  function rotateModel(direction) {
+    const rotationSpeed = 0.1;
+    if (direction === "left") {
+      root.rotation.y += rotationSpeed;
+    } else if (direction === "right") {
+      root.rotation.y -= rotationSpeed;
+    }
+    console.log("Model rotation:", root.rotation.y);
+  }
+
+  function setAnimation(name) {
+    mixerInfos.forEach((mixerInfo) => {
+      const actions = mixerInfo.actions; // renamed for clarity
+
+      const actionToPlay = actions.find(
+        (action) => action.getClip().name === name
+      );
+
+      if (actionToPlay) {
+        console.log(`Action "${name}" found and will be played.`);
+        actions.forEach((action) => action.stop()); // stop all actions
+        actionToPlay.play(); // play the specific action
+      } else {
+        console.warn(`Action "${name}" not found.`);
       }
     });
   }
-
-  window.addEventListener("keydown", (e) => {
-    if (e.code == "Space") {
-      mixerInfos.forEach((mixerInfo) => {
-        playNextAction(mixerInfo);
-      });
-    }
-  });
-  window.addEventListener("click", () => {
-    mixerInfos.forEach((mixerInfo) => {
-      playNextAction(mixerInfo);
-    });
-  });
 
   //render functinons
   function resizeRendererToDisplaySize(renderer) {
@@ -189,14 +264,24 @@ function main() {
 
   let then = 0;
   function render(now) {
-    const relativeCameraOffset = new THREE.Vector3(
-      -offsetDistance,
-      heightOffset,
-      -offsetDistance
-    );
+    kd.tick();
 
-    const cameraOffset = relativeCameraOffset.applyMatrix4(root.matrixWorld);
-    camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
+    if (moveForward) {
+      console.warn("moveforward");
+      const moveSpeed = 0.01;
+      const direction = new THREE.Vector3(
+        Math.sin(root.rotation.y),
+        0,
+        Math.cos(root.rotation.y)
+      );
+      direction.multiplyScalar(moveSpeed);
+      console.log("Moving direction:", direction);
+      root.position.add(direction);
+      console.log("New position:", root.position);
+      modelRoot.position.add(direction);
+
+      // camera.position.add(direction);
+    }
 
     //
     now *= 0.001;
