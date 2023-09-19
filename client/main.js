@@ -138,17 +138,19 @@ function main() {
     const animate = new handleAnimation(mixerInfos);
     animate.setAnimation("Idle");
 
+    //control
     if (detectIt.deviceType === "mouseOnly") {
-      const setKeyoard = new keyboard(animate.setAnimation.bind(animate));
+      const setKeyoard = new keyboard(
+        animate.setAnimation.bind(animate),
+        modelRoot
+      );
       setKeyoard.controls();
     } else {
       console.log("touch");
     }
 
-    // setupKeyBindings();
-  }
-
-  //animasjon
+    //movement
+  } // FERDIG INIT
 
   const models = {
     alienBug: {
@@ -187,44 +189,6 @@ function main() {
   let moveBackward = false; // Add this variable at the beginning of your main function
   let isRunning = false;
   let moveForward = false;
-
-  //keybindings
-  // function setupKeyBindings() {
-  //   kd.S.down(() => {
-  //     if (!isRunning) {
-  //       setAnimation("Run", -1); // Pass -1 to play the animation backwards
-  //       isRunning = true;
-  //       moveBackward = true;
-  //     }
-  //   });
-  //   kd.S.up(() => {
-  //     setAnimation("Idle");
-  //     isRunning = false;
-  //     moveForward = false; // Clear the flag when W is released
-  //   });
-
-  //   kd.W.down(() => {
-  //     if (!isRunning) {
-  //       setAnimation("Run");
-  //       isRunning = true;
-
-  //       moveForward = true; // Set the flag when W is pressed
-  //     }
-  //   });
-
-  //   kd.W.up(() => {
-  //     setAnimation("Idle");
-  //     isRunning = false;
-  //     moveForward = false; // Clear the flag when W is released
-  //   });
-  //   kd.A.down(() => {
-  //     rotateModel("left");
-  //   });
-
-  //   kd.D.down(() => {
-  //     rotateModel("right");
-  //   });
-  // }
 
   //rotate
   // function rotateModel(direction) {

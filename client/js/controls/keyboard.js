@@ -1,16 +1,21 @@
 // KEYBOARD
 import * as THREE from "three";
 import * as kd from "keydrown";
+import { moveModel } from "../movement/moveModel";
 
 export class keyboard {
-  constructor(animate, direction) {
+  constructor(animate, modelRoot, direction, rotating) {
     this.animate = animate;
     this.controls = this.controls.bind(this); // Binding the method
     this.direction = direction;
+    this.modelPosition = new moveModel();
+    this.rotating = rotating;
+    this.modelRoot = modelRoot;
   }
 
   controls() {
     //frem
+    this.modelPosition.modelRoot = this.modelRoot; // <-- Should work now
 
     kd.W.down(() => {
       if (!this.isRunning) {
@@ -28,22 +33,36 @@ export class keyboard {
 
     //bak
     kd.S.down(() => {
-      this.isRunning = true;
-      this.moveBackward = true;
+      if (!this.isRunning) {
+        this.animate("Run", -1);
+        this.isRunning = true;
+        this.moveBackward = true;
+      }
     });
 
     kd.S.up(() => {
+      this.animate("Idle");
       this.isRunning = false;
-      this.moveForward = false;
+      this.moveBackward = false;
     });
 
     //rotere
     kd.A.down(() => {
-      rotateModel("left");
+      this.rotating = true;
+      this.modelPosition.rotate("left");
+    });
+    kd.A.up(() => {
+      this.rotating = false;
+      this.modelPosition.rotate("left"); // <-- Should work now
     });
 
     kd.D.down(() => {
-      rotateModel("right");
+      this.rotating = true;
+      this.modelPosition.rotate("right");
+    });
+    kd.D.up(() => {
+      this.rotating = false;
+      this.modelPosition.rotate("right");
     });
   }
 }
