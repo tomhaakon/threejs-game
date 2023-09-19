@@ -186,19 +186,6 @@ function main() {
       model.animations = animsByName;
     });
   }
-  let moveBackward = false; // Add this variable at the beginning of your main function
-  let isRunning = false;
-  let moveForward = false;
-
-  //rotate
-  // function rotateModel(direction) {
-  //   const rotationSpeed = 0.03;
-  //   if (direction === "left") {
-  //     modelRoot.rotation.y += rotationSpeed;
-  //   } else if (direction === "right") {
-  //     modelRoot.rotation.y -= rotationSpeed;
-  //   }
-  // }
 
   //render functinons
   function resizeRendererToDisplaySize(renderer) {
@@ -217,16 +204,6 @@ function main() {
   let then = 0;
   function render(now) {
     kd.tick();
-
-    // if (moveForward) {
-    //   const direction = new THREE.Vector3(
-    //     Math.sin(modelRoot.rotation.y),
-    //     0,
-    //     Math.cos(modelRoot.rotation.y)
-    //   );
-    //   direction.multiplyScalar(moveSpeed);
-    //   modelRoot.position.add(direction);
-    // }
 
     // Calculate the new offset for the camera based on the model's forward direction
     const offset = new THREE.Vector3(
