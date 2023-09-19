@@ -43,6 +43,7 @@ export class touchControls {
     // Reset flags when joystick is released
     this.manager.on('end', () => {
       this.animate.setAnimation('Idle')
+      this.rotationHandler.stopRotating()
       this.movementHandler.stopMoving() // Inform the MovementHandler to stop movement
     })
   }
