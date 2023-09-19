@@ -75,7 +75,8 @@ body {
   right: 1rem;
   opacity: 50%;
 }
-
+#zone_joystick {
+}
 @keyframes progressanim {
   0% {
     background-position: 50px 50px;
