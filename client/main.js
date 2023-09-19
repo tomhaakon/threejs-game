@@ -218,15 +218,15 @@ function main() {
   function render(now) {
     kd.tick();
 
-    if (moveForward) {
-      const direction = new THREE.Vector3(
-        Math.sin(modelRoot.rotation.y),
-        0,
-        Math.cos(modelRoot.rotation.y)
-      );
-      direction.multiplyScalar(moveSpeed);
-      modelRoot.position.add(direction);
-    }
+    // if (moveForward) {
+    //   const direction = new THREE.Vector3(
+    //     Math.sin(modelRoot.rotation.y),
+    //     0,
+    //     Math.cos(modelRoot.rotation.y)
+    //   );
+    //   direction.multiplyScalar(moveSpeed);
+    //   modelRoot.position.add(direction);
+    // }
 
     // Calculate the new offset for the camera based on the model's forward direction
     const offset = new THREE.Vector3(

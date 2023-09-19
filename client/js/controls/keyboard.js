@@ -64,5 +64,11 @@ export class keyboard {
       this.rotating = false;
       this.modelPosition.rotate("right");
     });
+
+    kd.run(() => {
+      if (this.moveForward) {
+        this.modelPosition.move("forward");
+      }
+    });
   }
 }
