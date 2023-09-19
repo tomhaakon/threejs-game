@@ -3,9 +3,8 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
-import { RectAreaLightHelper } from "three/addons/helpers/RectAreaLightHelper.js";
-import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 
+import { useLightHelper } from "./js/lightHelper";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import * as kd from "keydrown";
 import * as detectIt from "detect-it";
@@ -40,7 +39,7 @@ function main() {
   scene.background = new THREE.Color("black");
 
   //camera
-  const root = new THREE.Object3D();
+
   const modelRoot = new THREE.Object3D(); // a new object just for the model
 
   const fov = 45;
@@ -68,6 +67,7 @@ function main() {
   camera.lookAt(lookAtPosition);
 
   //mixers
+
   const mixers = [];
   let mixerInfos = [];
   const moveSpeed = 0.1;
@@ -76,42 +76,8 @@ function main() {
       child.castShadow = true;
     }
   });
+  //Lighting setup
 
-  class ColorGUIHelper {
-    constructor(object, prop) {
-      this.object = object;
-      this.prop = prop;
-    }
-    get value() {
-      return `#${this.object[this.prop].getHexString()}`;
-    }
-    set value(hexString) {
-      this.object[this.prop].set(hexString);
-    }
-  }
-
-  class DegRadHelper {
-    constructor(obj, prop) {
-      this.obj = obj;
-      this.prop = prop;
-    }
-    get value() {
-      return THREE.MathUtils.radToDeg(this.obj[this.prop]);
-    }
-    set value(v) {
-      this.obj[this.prop] = THREE.MathUtils.degToRad(v);
-    }
-  }
-  function makeXYZGUI(gui, vector3, name, onChangeFn) {
-    const folder = gui.addFolder(name);
-    folder.add(vector3, "x", -10, 10).onChange(onChangeFn);
-    folder.add(vector3, "y", 0, 100).onChange(onChangeFn);
-    folder.add(vector3, "z", -10, 10).onChange(onChangeFn);
-    folder.open();
-  }
-
-  {
-  }
   const color = 0xffffff;
   const intensity = 5;
   const width = 12;
@@ -121,29 +87,10 @@ function main() {
   light.rotation.x = THREE.MathUtils.degToRad(-90);
   scene.add(light);
 
-  const helper = new RectAreaLightHelper(light);
-  //light.add(helper);
+  //const lightHelper = useLightHelper(light);
 
-  // const gui = new GUI();
-  // gui.addColor(new ColorGUIHelper(light, "color"), "value").name("color");
-  // gui.add(light, "intensity", 0, 10, 0.01);
-  // gui.add(light, "width", 0, 20);
-  // gui.add(light, "height", 0, 20);
-  // gui
-  //   .add(new DegRadHelper(light.rotation, "x"), "value", -180, 180)
-  //   .name("x rotation");
-  // gui
-  //   .add(new DegRadHelper(light.rotation, "y"), "value", -180, 180)
-  //   .name("y rotation");
-  // gui
-  //   .add(new DegRadHelper(light.rotation, "z"), "value", -180, 180)
-  //   .name("z rotation");
-
-  //Lighting setup
-  const ambientLight = new THREE.AmbientLight(0x404040);
+  //const ambientLight = new THREE.AmbientLight(0x404040);
   // scene.add(ambientLight);
-
-  //makeXYZGUI(gui, light.position, "position");
 
   function init() {
     loadingElem.style.display = "none";
@@ -185,7 +132,7 @@ function main() {
 
     //!  gorund
     const groundTexture = "./resources/textures/gr.jpg";
-    const loadGround = new createGround(scene, groundTexture);
+    new createGround(scene, groundTexture);
 
     //! animasjon funk
     const animate = new handleAnimation(mixerInfos);
