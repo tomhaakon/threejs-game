@@ -1,74 +1,75 @@
 // KEYBOARD
-import * as THREE from "three";
-import * as kd from "keydrown";
-import { moveModel } from "../movement/moveModel";
+import * as THREE from 'three'
+import * as kd from 'keydrown'
+import { moveModel } from '../movement/moveModel'
 
 export class keyboard {
-  constructor(animate, modelRoot, direction, rotating) {
-    this.animate = animate;
-    this.controls = this.controls.bind(this); // Binding the method
-    this.direction = direction;
-    this.modelPosition = new moveModel();
-    this.rotating = rotating;
-    this.modelRoot = modelRoot;
+  constructor(animate, modelRoot, mixerInfos, direction, rotating) {
+    this.mixerInfos = mixerInfos
+    this.animate = animate
+    this.controls = this.controls.bind(this) // Binding the method
+    this.direction = direction
+    this.modelPosition = new moveModel(this.modelRoot)
+    this.rotating = rotating
+    this.modelRoot = modelRoot
   }
 
   controls() {
     //frem
-    this.modelPosition.modelRoot = this.modelRoot; // <-- Should work now
+    this.modelPosition.modelRoot = this.modelRoot // <-- Should work now
 
     kd.W.down(() => {
       if (!this.isRunning) {
-        this.animate("Run");
-        this.isRunning = true;
-        this.moveForward = true;
+        this.animate('Run')
+        this.isRunning = true
+        this.moveForward = true
       }
-    });
+    })
 
     kd.W.up(() => {
-      this.animate("Idle");
-      this.isRunning = false;
-      this.moveForward = false;
-    });
+      this.animate('Idle')
+      this.isRunning = false
+      this.moveForward = false
+    })
 
     //bak
     kd.S.down(() => {
       if (!this.isRunning) {
-        this.animate("Run", -1);
-        this.isRunning = true;
-        this.moveBackward = true;
+        this.animate('Run', -1)
+        this.isRunning = true
+        this.moveBackward = true
       }
-    });
+    })
 
     kd.S.up(() => {
-      this.animate("Idle");
-      this.isRunning = false;
-      this.moveBackward = false;
-    });
+      this.animate('Idle')
+      this.isRunning = false
+      this.moveBackward = false
+    })
 
     //rotere
     kd.A.down(() => {
-      this.rotating = true;
-      this.modelPosition.rotate("left");
-    });
+      this.rotating = true
+      this.modelPosition.rotate('left')
+    })
     kd.A.up(() => {
-      this.rotating = false;
-      this.modelPosition.rotate("left"); // <-- Should work now
-    });
+      this.rotating = false
+      this.modelPosition.rotate('left') // <-- Should work now
+    })
 
     kd.D.down(() => {
-      this.rotating = true;
-      this.modelPosition.rotate("right");
-    });
+      this.rotating = true
+      this.modelPosition.rotate('right')
+    })
     kd.D.up(() => {
-      this.rotating = false;
-      this.modelPosition.rotate("right");
-    });
+      this.rotating = false
+      this.modelPosition.rotate('right')
+    })
 
     kd.run(() => {
       if (this.moveForward) {
-        this.modelPosition.move("forward");
+        this.modelPosition.move('forward', this.mixerInfos)
       }
-    });
+    })
   }
 }

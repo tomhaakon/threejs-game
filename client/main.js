@@ -148,8 +148,8 @@ function main() {
       )
       setKeyoard.controls()
     } else {
-      const controls = new touchControls(modelRoot, animate)
-      controls.joystick()
+      const controls = new touchControls(modelRoot, mixerInfos)
+      controls.initJoystick()
     }
 
     //movement
