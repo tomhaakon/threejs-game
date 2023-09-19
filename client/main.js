@@ -131,7 +131,8 @@ function main() {
     });
 
     //!  gorund
-    const groundTexture = "./resources/textures/gr.jpg";
+    const groundTexture =
+      "https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg";
     new createGround(scene, groundTexture);
 
     //! animasjon funk
