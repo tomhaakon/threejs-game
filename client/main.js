@@ -4,17 +4,17 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 
+import { keyboard } from "./js/controls/keyboard";
 import { useLightHelper } from "./js/lightHelper";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import * as kd from "keydrown";
 import * as detectIt from "detect-it";
-import { handleAnimation } from "./js/handleAnimation";
+import { handleAnimation } from "./js/animation/handleAnimation";
 import { createGround } from "./js/createGround";
 //custom imports
 import { sendError } from "./js/errorHandler.js";
 import { sendStatus } from "./js/handleStatus.js";
 
-sendError("loaded", "main.js"); // send msg that main.js is loaded
 sendError("device", detectIt.deviceType);
 
 function main() {
@@ -138,6 +138,13 @@ function main() {
     const animate = new handleAnimation(mixerInfos);
     animate.setAnimation("Idle");
 
+    if (detectIt.deviceType === "mouseOnly") {
+      const setKeyoard = new keyboard(animate.setAnimation.bind(animate));
+      setKeyoard.controls();
+    } else {
+      console.log("touch");
+    }
+
     // setupKeyBindings();
   }
 
@@ -182,52 +189,52 @@ function main() {
   let moveForward = false;
 
   //keybindings
-  function setupKeyBindings() {
-    kd.S.down(() => {
-      if (!isRunning) {
-        setAnimation("Run", -1); // Pass -1 to play the animation backwards
-        isRunning = true;
-        moveBackward = true;
-      }
-    });
-    kd.S.up(() => {
-      setAnimation("Idle");
-      isRunning = false;
-      moveForward = false; // Clear the flag when W is released
-    });
+  // function setupKeyBindings() {
+  //   kd.S.down(() => {
+  //     if (!isRunning) {
+  //       setAnimation("Run", -1); // Pass -1 to play the animation backwards
+  //       isRunning = true;
+  //       moveBackward = true;
+  //     }
+  //   });
+  //   kd.S.up(() => {
+  //     setAnimation("Idle");
+  //     isRunning = false;
+  //     moveForward = false; // Clear the flag when W is released
+  //   });
 
-    kd.W.down(() => {
-      if (!isRunning) {
-        setAnimation("Run");
-        isRunning = true;
+  //   kd.W.down(() => {
+  //     if (!isRunning) {
+  //       setAnimation("Run");
+  //       isRunning = true;
 
-        moveForward = true; // Set the flag when W is pressed
-      }
-    });
+  //       moveForward = true; // Set the flag when W is pressed
+  //     }
+  //   });
 
-    kd.W.up(() => {
-      setAnimation("Idle");
-      isRunning = false;
-      moveForward = false; // Clear the flag when W is released
-    });
-    kd.A.down(() => {
-      rotateModel("left");
-    });
+  //   kd.W.up(() => {
+  //     setAnimation("Idle");
+  //     isRunning = false;
+  //     moveForward = false; // Clear the flag when W is released
+  //   });
+  //   kd.A.down(() => {
+  //     rotateModel("left");
+  //   });
 
-    kd.D.down(() => {
-      rotateModel("right");
-    });
-  }
+  //   kd.D.down(() => {
+  //     rotateModel("right");
+  //   });
+  // }
 
   //rotate
-  function rotateModel(direction) {
-    const rotationSpeed = 0.03;
-    if (direction === "left") {
-      modelRoot.rotation.y += rotationSpeed;
-    } else if (direction === "right") {
-      modelRoot.rotation.y -= rotationSpeed;
-    }
-  }
+  // function rotateModel(direction) {
+  //   const rotationSpeed = 0.03;
+  //   if (direction === "left") {
+  //     modelRoot.rotation.y += rotationSpeed;
+  //   } else if (direction === "right") {
+  //     modelRoot.rotation.y -= rotationSpeed;
+  //   }
+  // }
 
   //render functinons
   function resizeRendererToDisplaySize(renderer) {
