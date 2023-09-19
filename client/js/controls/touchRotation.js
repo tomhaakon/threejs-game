@@ -13,14 +13,14 @@ export class RotationHandler {
     const maxRotateSpeed = 0.01
     this.rotateSpeed = maxRotateSpeed * Math.abs(Math.cos(angleInRadians))
 
-    if ((angle >= 0 && angle <= 70) || angle >= 270) {
+    if ((angle >= 0 && angle <= 50) || angle >= 270) {
       if (!this.isRotating || this.rotationDirection !== 'right') {
         this.stopRotating()
         this.isRotating = true
         this.rotationDirection = 'right'
         this.continuousRotate()
       }
-    } else if (angle >= 110 && angle <= 270) {
+    } else if (angle >= 130 && angle <= 270) {
       if (!this.isRotating || this.rotationDirection !== 'left') {
         this.stopRotating()
         this.isRotating = true

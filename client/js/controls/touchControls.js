@@ -29,7 +29,7 @@ export class touchControls {
       zone: document.getElementById('zone_joystick'),
       restJoystick: true,
       size: 80,
-      position: { bottom: '25%', left: '50%' },
+      position: { bottom: '10%', left: '50%' },
       mode: 'static',
       shape: 'circle',
       follow: false,
