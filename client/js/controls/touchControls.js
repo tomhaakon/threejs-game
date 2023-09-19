@@ -2,6 +2,8 @@ import * as THREE from 'three'
 import * as detectIt from 'detect-it'
 import nipplejs from 'nipplejs'
 import * as kd from 'keydrown'
+import { RotationHandler } from './touchRotation'
+import { MovementHandler } from './touchMovement'
 
 import { moveModel } from '../movement/moveModel' // Update this import path
 import { handleAnimation } from '../animation/handleAnimation'
@@ -10,12 +12,14 @@ export class touchControls {
     this.mixerInfos = mixerInfos
     this.modelMover = new moveModel(modelRoot)
     this.animate = new handleAnimation(this.mixerInfos)
+    this.rotationHandler = new RotationHandler(this.modelMover)
+    this.movementHandler = new MovementHandler(this.modelMover, this.animate)
+
     this.joystickState = {
       moving: false,
       data: null,
     }
     this.initJoystick()
-    this.run()
   }
 
   initJoystick() {
@@ -33,62 +37,13 @@ export class touchControls {
     this.manager = nipplejs.create(options) // Create the joystick manager
 
     this.manager.on('move', (event, data) => {
-      this.joystickState.moving = true
-      this.joystickState.data = data
+      this.rotationHandler.handle(data)
+      this.movementHandler.handle(data)
     })
     // Reset flags when joystick is released
     this.manager.on('end', () => {
       this.animate.setAnimation('Idle')
-      this.joystickState.moving = false
-      this.joystickState.data = null
+      this.movementHandler.stopMoving() // Inform the MovementHandler to stop movement
     })
-  }
-  run() {
-    if (this.joystickState.moving && this.joystickState.data) {
-      this.handleRotation(this.joystickState.data)
-      this.handleMovement(this.joystickState.data)
-    }
-
-    requestAnimationFrame(() => this.run())
-  }
-
-  handleRotation(data) {
-    const angle = data.angle.degree
-    const angleInRadians = (angle * Math.PI) / 180
-    const force = data.force
-    const maxRotateSpeed = 0.05
-    const rotateSpeed =
-      maxRotateSpeed * force * Math.abs(Math.sin(angleInRadians))
-
-    if (angle <= 45 || angle >= 315) {
-      // right
-      this.modelMover.rotate('right', rotateSpeed)
-    } else if (angle >= 135 && angle <= 225) {
-      // left
-      this.modelMover.rotate('left', rotateSpeed)
-    }
-  }
-
-  handleMovement(data) {
-    const angle = data.angle.degree
-    const angleInRadians = (angle * Math.PI) / 180
-    const force = data.force
-    const maxMoveSpeed = 1
-    const moveSpeed = maxMoveSpeed * force * Math.abs(Math.cos(angleInRadians))
-
-    if (angle > 45 && angle < 135) {
-      // forward
-      //kd.run()
-      this.modelMover.move('forward')
-      this.animate.setAnimation('Run')
-      //this.modelMover.move('forward', moveSpeed)
-    } else if (angle > 225 && angle < 315) {
-      // backward
-      this.modelMover.move('backward', moveSpeed)
-    }
-  }
-
-  continuousMove() {
-    requestAnimationFrame(() => this.continuousMove())
   }
 }
