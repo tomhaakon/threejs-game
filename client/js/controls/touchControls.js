@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import * as detectIt from 'detect-it'
-import nipplejs from 'nipplejs'
+
 import * as kd from 'keydrown'
 import { RotationHandler } from './touchRotation'
 import { MovementHandler } from './touchMovement'
