@@ -6,7 +6,6 @@
     "detect-it": "^4.0.1",
     "joystick-controller": "^1.0.15",
     "keydrown": "^1.2.8",
-    "nipplejs": "^0.10.1",
     "socket.io-client": "^4.7.2",
     "three": "^0.156.1"
   },
