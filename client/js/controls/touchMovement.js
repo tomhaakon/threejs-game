@@ -12,9 +12,8 @@ export class MovementHandler {
 
   handle(data) {
     const angle = data.angle.degree
-    this.force = data.force // Extract force from the data
+    this.force = data.force
 
-    // Start continuous movement if the joystick is in the forward range.
     if (angle >= 295 || angle >= 0) {
       if (!this.isMoving) {
         this.isMoving = true
@@ -22,21 +21,18 @@ export class MovementHandler {
         this.continuousMove()
       }
     } else {
-      // Stop continuous movement if the joystick is out of the forward range.
       this.isMoving = false
     }
   }
 
   continuousMove() {
-    if (!this.isMoving) return // Break out of the loop if not moving
+    if (!this.isMoving) return
 
-    // Calculate speed based on the force
     const maxMoveSpeed = 0.05
     const moveSpeed = maxMoveSpeed * this.force
     //  console.log(this.handle())
     this.modelMover.move('forward', moveSpeed)
 
-    // Use requestAnimationFrame to repeatedly call continuousMove
     requestAnimationFrame(() => this.continuousMove())
   }
 }
