@@ -30,9 +30,7 @@ function main() {
   const progressbarElem = document.querySelector('#progressbar')
   const manager = new THREE.LoadingManager()
   manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-    progressbarElem.computedStyleMap.width = `${
-      ((itemsLoaded / itemsTotal) * 100) | 0
-    }%`
+    progressbarElem.style.width = `${((itemsLoaded / itemsTotal) * 100) | 0}%`
   }
 
   //scene

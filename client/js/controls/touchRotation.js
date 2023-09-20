@@ -11,7 +11,7 @@ export class RotationHandler {
     const angleInRadians = (angle * Math.PI) / 180
     const force = data.force
     const maxRotateSpeed = 0.01
-    this.rotateSpeed = maxRotateSpeed * Math.abs(Math.cos(angleInRadians))
+    this.rotateSpeed = maxRotateSpeed * Math.abs(Math.cos(angleInRadians) / 2)
 
     if ((angle >= 0 && angle <= 50) || angle >= 270) {
       if (!this.isRotating || this.rotationDirection !== 'right') {
