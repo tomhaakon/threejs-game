@@ -4,6 +4,7 @@ import nipplejs from 'nipplejs'
 import * as kd from 'keydrown'
 import { RotationHandler } from './touchRotation'
 import { MovementHandler } from './touchMovement'
+import JoystickController from 'joystick-controller'
 
 import { moveModel } from '../movement/moveModel' // Update this import path
 import { handleAnimation } from '../animation/handleAnimation'
@@ -25,26 +26,24 @@ export class touchControls {
   initJoystick() {
     this.animate.setAnimation('Idle')
 
-    var options = {
-      zone: document.getElementById('zone_joystick'),
-      restJoystick: true,
-      size: 80,
-      position: { bottom: '10%', left: '50%' },
-      mode: 'static',
-      shape: 'circle',
-      follow: false,
-    }
-    this.manager = nipplejs.create(options) // Create the joystick manager
+    const joystick = new JoystickController(
+      {
+        x: '70%',
+        y: '15%',
+        maxRange: 50,
+      },
+      (data) => this.rotationHandler.handle(data)
+      //  this.movementHandler.handle(this.data)
+    )
 
-    this.manager.on('move', (event, data) => {
-      this.rotationHandler.handle(data)
-      this.movementHandler.handle(data)
-    })
-    // Reset flags when joystick is released
-    this.manager.on('end', () => {
-      this.animate.setAnimation('Idle')
-      this.rotationHandler.stopRotating()
-      this.movementHandler.stopMoving() // Inform the MovementHandler to stop movement
-    })
+    // if ((this.joystickState.data.distance = 0)) {
+    //   console.warn('hei')
+    //   this.rotationHandler.handle(this.data)
+    //   this.movementHandler.handle(this.data)
+    // }
+
+    // this.animate.setAnimation('Idle')
+    // this.rotationHandler.stopRotating()
+    // this.movementHandler.stopMoving() // Inform the MovementHandler to stop movement
   }
 }

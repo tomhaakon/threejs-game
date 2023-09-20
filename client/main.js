@@ -145,9 +145,16 @@ function main() {
         modelRoot
       )
       setKeyoard.controls()
+      joystick.destroy()
     } else {
       const controls = new touchControls(modelRoot, mixerInfos)
-      controls.initJoystick()
+      // const joystick = new JoystickController(
+      //   {
+      //     x: '70%',
+      //     y: '15%',
+      //   },
+      //   (data) => console.log(data)
+      // )
     }
 
     //movement

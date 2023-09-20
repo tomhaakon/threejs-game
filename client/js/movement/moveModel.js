@@ -4,6 +4,7 @@ export class moveModel {
   constructor(modelRoot, mixerInfos) {
     //this.mixerInfos = mixerInfos
     // console.warn(this.mixerInfos)
+
     this.modelRoot = modelRoot
     this.moveSpeed = 0.2 // You can adjust this speed based on your requirements
   }
@@ -30,11 +31,11 @@ export class moveModel {
     }
   }
 
-  rotate(rotateDirection, speed = 0.01) {
+  rotate(rotateDirection, rotateSpeed = 0) {
     if (rotateDirection === 'left') {
-      this.modelRoot.rotation.y += speed
+      this.modelRoot.rotation.y += rotateSpeed
     } else if (rotateDirection === 'right') {
-      this.modelRoot.rotation.y -= speed
+      this.modelRoot.rotation.y -= rotateSpeed
     }
   }
 }

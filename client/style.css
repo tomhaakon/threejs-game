@@ -4,6 +4,9 @@ body {
   margin: 0;
   color: white;
   font-family: monospace;
+  overflow: hidden; /* Ensures the page doesn't scroll */
+
+  touch-action: none; /* This prevents the default pan and zoom of the browser on touch */
 }
 #c {
   width: 100%;
