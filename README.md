@@ -1,14 +1,28 @@
 ﻿﻿# threejs-game
 
-husk dette:
+
+### Backend 
+hosted on render.com 
+Vite, express, socket.io, cors
+
+
+### Frontend
+hosted on netlify
+Vite
+
+Detect-it
 https://github.com/rafgraph/detect-it
+
+Keydrown
 https://jeremyckahn.github.io/keydrown/
+
+Nipplejs
+For touch joystick control for touch screen
+
+Model 
 https://www.mixamo.com/#/
 
-badkend amazon s3, skal prøve supabase
-
-
-## mine egne funksjoner
+## custom functions for debug
 
 ### sendError
 
@@ -18,10 +32,10 @@ import
 import { sendError } from "./errorHandler.js";
 ```
 
-bruk
+use
 
 ```
-sendError("tittel for beskjed", "innhold");
+sendError("title", "content");
 ```
 
 ### handleStatus
@@ -32,27 +46,31 @@ import
 import { sendStatus } from './handleStatus.js'
 ```
 
-bruk, legg den i en funksjon du vil teste om den kjører eller ikke. om den funker vil et icon som beveger seg dukke opp nederst til venstre.
+bruk
 
 ```
  sendStatus(true)
 ```
 
-# install threejs-init
+# install threejs-game locally
+```
+cd threejs-game
+npm i
+npm run start ./server
+npm run dev ./client
+```
 
 index.html
 style.css
 main.js
 
+# init
 ## vite
-
 ```
 npm install --save-dev vite
 npx vite
 ```
-
 ## three.js
-
 ```
 npm install --save three
 ```
