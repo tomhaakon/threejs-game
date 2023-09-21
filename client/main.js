@@ -135,15 +135,12 @@ function main() {
     new createGround(scene, groundTexture)
 
     //! animasjon funk
-    const animate = new handleAnimation(mixerInfos)
+
     //animate.setAnimation('Idle')
 
     //control
     if (detectIt.deviceType === 'mouseOnly') {
-      const setKeyoard = new keyboard(
-        animate.setAnimation.bind(animate),
-        modelRoot
-      )
+      const setKeyoard = new keyboard(modelRoot)
       setKeyoard.controls()
     } else {
       const controls = new touchControls(modelRoot, mixerInfos)

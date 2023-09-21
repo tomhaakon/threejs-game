@@ -47,7 +47,7 @@ export class touchControls {
   initJoystick() {
     const joystick = new JoystickController(
       {
-        maxRange: 70,
+        maxRange: 30,
         level: 10,
         radius: 50,
         joystickRadius: 30,
@@ -67,12 +67,19 @@ export class touchControls {
         this.updateTouchZones(data)
       }
     )
+
+    // joystick('end', () => {
+    //   console.log('End')
+    //   this.touchZones.leveledY = 0 // Reset to zero
+    //   this.modelMover.move(0) // Move with zero throttle
+    //   this.modelMover.setMixerInfos(this.mixerInfos)
+    // })
   }
 
   updateTouchZones(data) {
     const { leveledX, leveledY } = data
     const threshold = 0.00001
-
+    //  console.log(data)
     this.touchZones.leveledX = leveledX
     this.touchZones.leveledY = leveledY
 
@@ -115,9 +122,9 @@ export class touchControls {
     }
     // gass
     if (this.touchZones.zoneTop) {
-      this.direction = 'forward'
-      this.modelMover.move('forward', this.touchZones.leveledY)
+      console.log(this.touchZones.leveledY)
+      this.modelMover.move(this.touchZones.leveledY)
       this.modelMover.setMixerInfos(this.mixerInfos)
-    }
+    } else this.modelMover.move(0)
   }
 }
