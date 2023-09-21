@@ -3,7 +3,7 @@ import { handleAnimation } from '../animation/handleAnimation'
 export class moveModel {
   constructor(modelRoot, mixerInfos) {
     this.modelRoot = modelRoot
-    this.baseMoveSpeed = 0.001
+    this.baseMoveSpeed = 0.01
   }
 
   move(direction, speed = this.moveSpeed) {
@@ -30,7 +30,8 @@ export class moveModel {
 
   rotate(direction, level) {
     //console.log('Direction:', direction)
-
+    //console.log('rotate trigeredc')
+    //  console.log(direction, level)
     if (direction === 'idle') {
       console.log('idle')
     } else {
