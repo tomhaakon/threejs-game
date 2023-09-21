@@ -2,8 +2,7 @@ import * as THREE from 'three'
 import * as detectIt from 'detect-it'
 
 import * as kd from 'keydrown'
-import { RotationHandler } from './touchRotation'
-import { MovementHandler } from './touchMovement'
+
 import JoystickController from 'joystick-controller'
 
 import { moveModel } from '../movement/moveModel' // Update this import path
@@ -12,9 +11,6 @@ export class touchControls {
   constructor(modelRoot, mixerInfos) {
     this.mixerInfos = mixerInfos
     this.modelMover = new moveModel(modelRoot)
-
-    this.rotationHandler = new RotationHandler(this.modelMover)
-    this.movementHandler = new MovementHandler(this.modelMover)
 
     this.direction = ''
     this.level = 0
@@ -66,27 +62,22 @@ export class touchControls {
         hideContextMenu: false,
       },
       (data) => {
-        this.joystickStates(data)
-        this.movementHandler.handle(data)
+        this.updateTouchZones(data)
       }
     )
-  }
-  joystickStates(data) {
-    this.updateTouchZones(data)
-    this.movementHandler.handle(this.touchZones)
-    this.rotationHandler.handle(this.touchZones)
   }
 
   updateTouchZones(data) {
     const { leveledX, leveledY } = data
+    const threshold = 0.00001
 
     this.touchZones.leveledX = leveledX
     this.touchZones.leveledY = leveledY
 
-    this.touchZones.zoneTop = leveledY > 0
-    this.touchZones.zoneBottom = leveledY < 0
-    this.touchZones.zoneRight = leveledX > 0
-    this.touchZones.zoneLeft = leveledX < 0
+    this.touchZones.zoneTop = leveledY > threshold
+    this.touchZones.zoneBottom = leveledY < -threshold
+    this.touchZones.zoneRight = leveledX > threshold
+    this.touchZones.zoneLeft = leveledX < -threshold
 
     this.touchZones.zoneRightTop = this.touchZones.zoneRight && leveledY > 0
     this.touchZones.zoneRightBottom = this.touchZones.zoneRight && leveledY < 0
@@ -98,53 +89,32 @@ export class touchControls {
   performRotation() {
     //movement
 
-    //sving venstre level 1
-    if (this.touchZones.zoneLeft || this.touchZones.zoneLeftBottom) {
+    //sving venstre bunn
+    if (this.touchZones.zoneLeftBottom) {
       this.direction = 'left-bottom'
-      this.level = 1
-      this.modelMover.rotate(this.direction, this.level)
+      this.modelMover.rotate(this.direction)
     }
-    //sving venstre level 2
+    //sving venstre top
     if (this.touchZones.zoneLeftTop) {
       this.direction = 'left-top'
-      this.level = 2
-      this.modelMover.rotate(this.direction, this.level)
+
+      this.modelMover.rotate(this.direction)
     }
-    //sving høyre level 1
-    if (this.touchZones.zoneRight || this.touchZones.zoneRightBottom) {
+    //sving høyre bunn
+    if (this.touchZones.zoneRightBottom) {
       this.direction = 'right-bottom'
-      this.level = 1
-      this.modelMover.rotate(this.direction, this.level)
+
+      this.modelMover.rotate(this.direction)
     }
     //sving høyre level 2
     if (this.touchZones.zoneRightTop) {
       this.direction = 'right-top'
-      this.level = 2
-      this.modelMover.rotate(this.direction, this.level)
+      this.modelMover.rotate(this.direction)
     }
-
-    // check if throttle is let of
-    if (
-      this.direction !== '' &&
-      (this.touchZones.leveledX === 0 || this.touchZones.leveledY === 0)
-    ) {
-      this.direction = 'idle'
-    }
-
-    // this.logger()
-
-    if (
-      this.direction !== '' &&
-      (this.touchZones.leveledX === 0 || this.touchZones.leveledY === 0)
-    ) {
-      this.direction = 'idle'
-      this.level = 0
-    }
-    // console.log(this.direction)
-
-    if (this.direction && this.level) {
-      this.modelMover.rotate(this.direction, this.level)
-    } else {
+    // gass
+    if (this.touchZones.zoneTop) {
+      this.direction = 'forward'
+      this.modelMover.move('forward', this.touchZones.leveledY)
     }
   }
 }
