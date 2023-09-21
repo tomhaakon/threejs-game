@@ -6,7 +6,7 @@ export class moveModel {
     // console.warn(this.mixerInfos)
 
     this.modelRoot = modelRoot
-    this.moveSpeed = 0.2 // You can adjust this speed based on your requirements
+    this.moveSpeed = 0.1 // You can adjust this speed based on your requirements
   }
 
   move(direction, speed = this.moveSpeed) {
