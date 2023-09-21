@@ -1,22 +1,32 @@
 import * as THREE from 'three'
 import { handleAnimation } from '../animation/handleAnimation'
 export class moveModel {
-  constructor(modelRoot, mixerInfos) {
+  constructor(modelRoot) {
     this.modelRoot = modelRoot
-    this.baseMoveSpeed = 0.05
-    this.moveSlow = 0.01
-    this.moveFast = 0.02
-  }
 
+    this.baseMoveSpeed = 0.05
+    this.rotateSlow = 0.005
+    this.rotateFast = 0.02
+    this.animate = null // Initialize to null
+  }
+  setMixerInfos(mixerInfos) {
+    this.animate = new handleAnimation(mixerInfos) // Create a new instance when needed
+  }
   move(direction, throttle) {
-    if (!this.modelRoot) return // guard in case modelRoot is not set
-    console.log(throttle)
+    if (!this.modelRoot || !this.animate) return // Guard in case modelRoot or animate is not set
+
+    const speed = this.baseMoveSpeed
+    const forwardVector = new THREE.Vector3(0, 0, 1)
+    forwardVector.multiplyScalar(speed * throttle)
+    forwardVector.applyQuaternion(this.modelRoot.quaternion)
 
     if (direction === 'forward') {
-      const forwardVector = new THREE.Vector3(0, 0, 1) // Assuming the model faces the negative Z direction
-      forwardVector.multiplyScalar(this.baseMoveSpeed * throttle) // Scale the movement
-      forwardVector.applyQuaternion(this.modelRoot.quaternion) // Rotate the direction
-      this.modelRoot.position.add(forwardVector) // Perform the move
+      if (throttle === 0) {
+        this.animate.setAnimation('Idle')
+      } else {
+        this.animate.setAnimation('Run')
+        this.modelRoot.position.add(forwardVector) // Perform the move
+      }
     }
   }
 
@@ -28,20 +38,20 @@ export class moveModel {
       // console.log('idle')
     } else {
       if (direction === 'left-bottom') {
-        this.modelRoot.rotation.y += this.moveFast
+        this.modelRoot.rotation.y += this.rotateFast
         //  console.log('left-bottom')
       }
       if (direction === 'left-top') {
         //  console.log('left-top')
 
-        this.modelRoot.rotation.y += this.moveSlow
+        this.modelRoot.rotation.y += this.rotateSlow
       }
       if (direction === 'right-bottom') {
-        this.modelRoot.rotation.y -= this.moveFast
+        this.modelRoot.rotation.y -= this.rotateFast
         //  console.log('right-bottom')
       }
       if (direction === 'right-top') {
-        this.modelRoot.rotation.y -= this.moveSlow
+        this.modelRoot.rotation.y -= this.rotateSlow
         //console.log('right-top')
       }
       //  this.rotate(direction, level)

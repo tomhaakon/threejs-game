@@ -10,6 +10,8 @@ import { handleAnimation } from '../animation/handleAnimation'
 export class touchControls {
   constructor(modelRoot, mixerInfos) {
     this.mixerInfos = mixerInfos
+    console.log(mixerInfos)
+
     this.modelMover = new moveModel(modelRoot)
 
     this.direction = ''
@@ -115,6 +117,7 @@ export class touchControls {
     if (this.touchZones.zoneTop) {
       this.direction = 'forward'
       this.modelMover.move('forward', this.touchZones.leveledY)
+      this.modelMover.setMixerInfos(this.mixerInfos)
     }
   }
 }
