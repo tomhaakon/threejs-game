@@ -1,7 +1,6 @@
 export class MovementHandler {
-  constructor(modelMover, animate) {
+  constructor(modelMover) {
     this.modelMover = modelMover
-    this.animate = animate
     this.isMoving = false
     this.currentAnimation = null // Keep track of the current animation
   }
@@ -22,24 +21,15 @@ export class MovementHandler {
       return
     }
 
-    if (this.currentAnimation !== 'Run') {
-      this.animate.setAnimation('Run')
-      this.currentAnimation = 'Run'
-    }
-
     requestAnimationFrame(() => {
       if (this.isMoving) {
-        this.modelMover.move(direction)
+        //  this.modelMover.move(direction)
         this.move(direction)
       }
     })
   }
 
   stopMoving() {
-    if (this.currentAnimation !== 'Idle') {
-      this.animate.setAnimation('Idle')
-      this.currentAnimation = 'Idle'
-    }
     this.isMoving = false
   }
 }

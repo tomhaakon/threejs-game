@@ -2,11 +2,8 @@ import * as THREE from 'three'
 import { handleAnimation } from '../animation/handleAnimation'
 export class moveModel {
   constructor(modelRoot, mixerInfos) {
-    //this.mixerInfos = mixerInfos
-    // console.warn(this.mixerInfos)
-
     this.modelRoot = modelRoot
-    this.moveSpeed = 0.1 // You can adjust this speed based on your requirements
+    this.baseMoveSpeed = 0.001
   }
 
   move(direction, speed = this.moveSpeed) {
@@ -31,11 +28,29 @@ export class moveModel {
     }
   }
 
-  rotate(rotateDirection, rotateSpeed = 0) {
-    if (rotateDirection === 'left') {
-      this.modelRoot.rotation.y += rotateSpeed
-    } else if (rotateDirection === 'right') {
-      this.modelRoot.rotation.y -= rotateSpeed
+  rotate(direction, level) {
+    //console.log('Direction:', direction)
+
+    if (direction === 'idle') {
+      console.log('idle')
+    } else {
+      if (direction === 'left-bottom') {
+        this.modelRoot.rotation.y -= this.baseMoveSpeed * level
+        console.log('left-bottom')
+      }
+      if (direction === 'left-top') {
+        console.log('left-top')
+        this.modelRoot.rotation.y -= this.baseMoveSpeed * level
+      }
+      if (direction === 'right-bottom') {
+        this.modelRoot.rotation.y += this.baseMoveSpeed * level
+        console.log('right-bottom')
+      }
+      if (direction === 'right-top') {
+        this.modelRoot.rotation.y += this.baseMoveSpeed * level
+        console.log('right-top')
+      }
+      //  this.rotate(direction, level)
     }
   }
 }
