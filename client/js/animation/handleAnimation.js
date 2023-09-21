@@ -7,7 +7,7 @@ export class handleAnimation {
   }
   setAnimation(name) {
     //
-    console.log('setAnimation:', name)
+    //  console.log('setAnimation:', name)
     this.mixerInfos.forEach((mixerInfo) => {
       const actions = mixerInfo.actions // renamed for clarity
 
@@ -24,7 +24,7 @@ export class handleAnimation {
       if (name === 'Rotate') {
         let action = actions[3]
         action.timeScale = 2.0
-        console.log(actions[3].play())
+        //   console.log(actions[3].play())
         action.play()
       } //else {
       //   console.warn(`Action "${name}" not found`)

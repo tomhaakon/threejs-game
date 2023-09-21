@@ -10,7 +10,7 @@ import { handleAnimation } from '../animation/handleAnimation'
 export class touchControls {
   constructor(modelRoot, mixerInfos) {
     this.mixerInfos = mixerInfos
-    console.log(mixerInfos)
+    // console.log(mixerInfos)
 
     this.modelMover = new moveModel(modelRoot)
 
@@ -97,7 +97,7 @@ export class touchControls {
 
   performRotation() {
     //movement
-
+    this.modelMover.setMixerInfos(this.mixerInfos)
     //sving venstre bunn
     if (this.touchZones.zoneLeftBottom) {
       this.direction = 'left-bottom'
@@ -120,11 +120,15 @@ export class touchControls {
       this.direction = 'right-top'
       this.modelMover.rotate(this.direction)
     }
+
     // gass
     if (this.touchZones.zoneTop) {
-      console.log(this.touchZones.leveledY)
-      this.modelMover.move(this.touchZones.leveledY)
-      this.modelMover.setMixerInfos(this.mixerInfos)
-    } else this.modelMover.move(0)
+      // console.log(this.touchZones.leveledY)
+      this.modelMover.move(
+        this.touchZones.leveledY,
+        this.touchZones.leveledX,
+        this.touchZones
+      )
+    } else this.modelMover.move(0, 0, this.touchZones)
   }
 }

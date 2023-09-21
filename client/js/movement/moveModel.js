@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { handleAnimation } from '../animation/handleAnimation'
+import { touchControls } from '../controls/touchControls'
 export class moveModel {
   constructor(modelRoot) {
     this.modelRoot = modelRoot
@@ -11,6 +12,7 @@ export class moveModel {
     this.rotateSlow = 0.005
     this.rotateFast = 0.02
     this.animate = null // Initialize to null
+    this.newAnimationState = this.state.animation
 
     this.addListener(this.updateState.bind(this))
   }
@@ -21,34 +23,32 @@ export class moveModel {
     }
   }
   addListener(callback) {
-    document.addEventListener('touchend', callback)
-    document.addEventListener('touchcancel', callback)
     // Your code for adding listener, maybe an event emitter or Observable
     // For this example, let's assume you would directly call `callback` when state changes
   }
   setMixerInfos(mixerInfos) {
     this.animate = new handleAnimation(mixerInfos) // Create a new instance when needed
   }
-  move(throttle) {
-    // console.log(throttle)
+  move(throttle, rotate, touchZones) {
     if (!this.modelRoot || !this.animate) return
-
+    // console.log(touchZones)
     const speed = this.baseMoveSpeed
     const forwardVector = new THREE.Vector3(0, 0, 1)
     forwardVector.multiplyScalar(speed * throttle)
     forwardVector.applyQuaternion(this.modelRoot.quaternion)
-    let newAnimationState = this.state.animation // Use current state as default
-
-    if (throttle >= 2) {
+    this.newAnimationState = this.state.animation // Use current state as default
+    if (touchZones.zoneBottom) {
+      this.newAnimationState = 'Rotate'
+    } else if (throttle >= 2) {
       // adjust this to fit your specific conditions
-      newAnimationState = 'Run'
+      this.newAnimationState = 'Run'
       this.modelRoot.position.add(forwardVector)
     } else {
-      newAnimationState = 'Idle'
+      this.newAnimationState = 'Idle'
     }
 
-    if (newAnimationState !== this.state.animation) {
-      this.updateState({ animation: newAnimationState })
+    if (this.newAnimationState !== this.state.animation) {
+      this.updateState({ animation: this.newAnimationState })
     }
   }
 
@@ -56,11 +56,14 @@ export class moveModel {
     //console.log('Direction:', direction)
     //console.log('rotate trigeredc')
     //  console.log(direction, level)
+
     if (direction === 'idle') {
       // console.log('idle')
     } else {
+      // this.updateState({ animation: 'Rotate' })
       if (direction === 'left-bottom') {
         this.modelRoot.rotation.y += this.rotateFast
+        this.updateState({ animation: 'Rotate' })
         //  console.log('left-bottom')
       }
       if (direction === 'left-top') {
@@ -70,6 +73,7 @@ export class moveModel {
       }
       if (direction === 'right-bottom') {
         this.modelRoot.rotation.y -= this.rotateFast
+        this.updateState({ animation: 'Rotate' })
         //  console.log('right-bottom')
       }
       if (direction === 'right-top') {
