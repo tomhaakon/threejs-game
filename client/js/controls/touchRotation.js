@@ -3,7 +3,7 @@ export class RotationHandler {
     this.modelMover = modelMover
     this.isRotating = false // Track if we are currently rotating
     this.rotationDirection = null // Track the current rotation direction
-    this.baseSpeedSetting = 0.000001
+    this.baseSpeedSetting = 0.0001
     this.speedMultiplier = 1 // Adjust this value to your preference
     this.joystickEngagedThreshold = 0.1 // Threshold to consider joystick as engaged
   }

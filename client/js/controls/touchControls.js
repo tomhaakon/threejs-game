@@ -30,7 +30,7 @@ export class touchControls {
       {
         x: '70%',
         y: '15%',
-        maxRange: 50,
+        maxRange: 30,
       },
       (data) => this.rotationHandler.handle(data)
       //  this.movementHandler.handle(this.data)
