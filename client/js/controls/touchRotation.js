@@ -1,57 +1,57 @@
 export class RotationHandler {
-  constructor(modelMover) {
+  constructor(modelMover, animate) {
     this.modelMover = modelMover
-    this.isRotating = false // Track if we are currently rotating
-    this.rotationDirection = null // Track the current rotation direction
-    this.baseSpeedSetting = 0.0001
-    this.speedMultiplier = 1 // Adjust this value to your preference
-    this.joystickEngagedThreshold = 0.1 // Threshold to consider joystick as engaged
+    this.animate = animate
+    this.isRotating = false
+    this.currentAnimation = null // Keep track of the current animation
   }
 
   handle(data) {
-    const radianAngle = Math.atan2(data.y, data.x)
-    const angle = (radianAngle * (180 / Math.PI) + 360) % 360
-
-    // Compute rotation speed based on joystick's vertical position
-    // The multiplier ensures the speed increases as the joystick moves downwards
-    const computedSpeed =
-      this.baseSpeedSetting * (1 - data.y) * this.speedMultiplier
-
-    // Update isRotating based on joystick's distance from center
-    this.isRotating = parseFloat(data.distance) > this.joystickEngagedThreshold
-
-    if (this.isRotating) {
-      if ((angle >= 0 && angle <= 85) || angle >= 275) {
-        this.rotationDirection = 'left'
-        this.continuousRotate(computedSpeed)
-      } else if (angle >= 95 && angle <= 265) {
-        this.rotationDirection = 'right'
-        this.continuousRotate(computedSpeed)
-      } else {
-        this.stopRotating()
+    if (data.leveledX !== 0) {
+      if (data.leveledX > 0) {
+        this.rotate('right')
+        this.isRotating = true
       }
+      if (data.leveledX <= 0) {
+        this.rotate('left')
+        this.isRotating = true
+      }
+      this.rotateAnimation(true)
     } else {
       this.stopRotating()
+      this.isRotating = false
+      this.rotateAnimation(false)
+      return
+    }
+  }
+
+  rotateAnimation(state) {
+    if (state && this.isRotating) {
+      if (this.currentAnimation !== 'Rotate') {
+        // NEW
+        this.animate.setAnimation('Rotate')
+        this.currentAnimation = 'Rotate' // NEW
+      }
+    } else {
+      if (this.currentAnimation !== 'Idle') {
+        // NEW
+        this.animate.setAnimation('Idle') // Assuming this will stop the animation
+        this.currentAnimation = 'Idle' // NEW
+      }
     }
   }
 
   stopRotating() {
     this.isRotating = false
-    this.rotationDirection = null
+    this.rotateAnimation(false) // Explicitly stop animation
   }
 
-  continuousRotate(rotateSpeed = this.baseSpeedSetting) {
-    if (!this.isRotating) return
-
-    if (this.rotationDirection === 'right') {
-      this.modelMover.rotate('right', rotateSpeed)
-    } else if (this.rotationDirection === 'left') {
-      this.modelMover.rotate('left', rotateSpeed)
-    } else {
-      this.modelMover.rotate('')
+  rotate(direction) {
+    if (this.isRotating) {
+      requestAnimationFrame(() => {
+        this.modelMover.rotate(direction, 1 / 2000)
+        this.rotate(direction)
+      })
     }
-
-    // Use requestAnimationFrame to repeatedly call continuousRotate
-    requestAnimationFrame(() => this.continuousRotate(rotateSpeed))
   }
 }

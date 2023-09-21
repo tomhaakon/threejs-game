@@ -3,36 +3,43 @@ export class MovementHandler {
     this.modelMover = modelMover
     this.animate = animate
     this.isMoving = false
-    this.force = this.force
-  }
-  stopMoving() {
-    this.animate.setAnimation('Idle')
-    this.isMoving = false
+    this.currentAnimation = null // Keep track of the current animation
   }
 
   handle(data) {
-    const angle = data.angle.degree
-    this.force = data.force
-
-    if (angle >= 295 || angle >= 0) {
-      if (!this.isMoving) {
-        this.isMoving = true
-        this.animate.setAnimation('Run')
-        this.continuousMove()
-      }
-    } else {
+    if (data.leveledY <= 0) {
+      this.stopMoving()
       this.isMoving = false
+    } else if (data.leveledY > 0) {
+      this.isMoving = true
+      this.move('forward')
     }
   }
 
-  continuousMove() {
-    if (!this.isMoving) return
+  move(direction) {
+    if (!this.isMoving) {
+      this.stopMoving()
+      return
+    }
 
-    const maxMoveSpeed = 0.05
-    const moveSpeed = maxMoveSpeed * this.force
-    //  console.log(this.handle())
-    this.modelMover.move('forward', moveSpeed)
+    if (this.currentAnimation !== 'Run') {
+      this.animate.setAnimation('Run')
+      this.currentAnimation = 'Run'
+    }
 
-    requestAnimationFrame(() => this.continuousMove())
+    requestAnimationFrame(() => {
+      if (this.isMoving) {
+        this.modelMover.move(direction)
+        this.move(direction)
+      }
+    })
+  }
+
+  stopMoving() {
+    if (this.currentAnimation !== 'Idle') {
+      this.animate.setAnimation('Idle')
+      this.currentAnimation = 'Idle'
+    }
+    this.isMoving = false
   }
 }

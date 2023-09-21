@@ -136,7 +136,7 @@ function main() {
 
     //! animasjon funk
     const animate = new handleAnimation(mixerInfos)
-    animate.setAnimation('Idle')
+    //animate.setAnimation('Idle')
 
     //control
     if (detectIt.deviceType === 'mouseOnly') {
@@ -145,7 +145,6 @@ function main() {
         modelRoot
       )
       setKeyoard.controls()
-      joystick.destroy()
     } else {
       const controls = new touchControls(modelRoot, mixerInfos)
       // const joystick = new JoystickController(

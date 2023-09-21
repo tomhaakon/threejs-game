@@ -13,7 +13,7 @@ export class touchControls {
     this.mixerInfos = mixerInfos
     this.modelMover = new moveModel(modelRoot)
     this.animate = new handleAnimation(this.mixerInfos)
-    this.rotationHandler = new RotationHandler(this.modelMover)
+    this.rotationHandler = new RotationHandler(this.modelMover, this.animate)
     this.movementHandler = new MovementHandler(this.modelMover, this.animate)
 
     this.joystickState = {
@@ -28,12 +28,26 @@ export class touchControls {
 
     const joystick = new JoystickController(
       {
-        x: '70%',
-        y: '15%',
-        maxRange: 30,
+        maxRange: 70,
+        level: 10,
+        radius: 50,
+        joystickRadius: 30,
+        opacity: 0.5,
+        leftToRight: false,
+        bottomToUp: true,
+        containerClass: 'joystick-container',
+        controllerClass: 'joystick-controller',
+        joystickClass: 'joystick',
+        distortion: true,
+        x: '25%',
+        y: '25%',
+        mouseClickButton: 'ALL',
+        hideContextMenu: false,
       },
-      (data) => this.rotationHandler.handle(data)
-      //  this.movementHandler.handle(this.data)
+      (data) => {
+        this.rotationHandler.handle(data)
+        this.movementHandler.handle(data)
+      }
     )
 
     // if ((this.joystickState.data.distance = 0)) {
