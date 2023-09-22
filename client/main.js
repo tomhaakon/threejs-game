@@ -18,13 +18,31 @@ import * as detectIt from 'detect-it'
 import { sendError } from './js/errorHandler.js'
 import { sendStatus } from './js/handleStatus.js'
 sendError('device', detectIt.deviceType)
-
+function loadModelAsync(modelInfo) {
+  return new Promise((resolve, reject) => {
+    // your loading logic here
+    // ...
+    if (successful) {
+      resolve(loadedModel)
+    } else {
+      reject(new Error('Could not load model'))
+    }
+  })
+}
+async function preload() {
+  try {
+    const allModels = await Promise.all(models.map(loadModelAsync))
+    init(allModels) // Pass loaded models to init function
+  } catch (error) {
+    console.error('Failed to preload resources:', error)
+    // Handle failure, perhaps show an error message to the user
+  }
+}
 //? canvas
 function initializeRenderer(canvas) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
   return renderer
 }
-
 //? loader
 function initializeLoadingManager() {
   const loadingElem = document.querySelector('#loading')
@@ -41,7 +59,7 @@ function initializeScene() {
   scene.background = new THREE.Color('black')
   return scene
 }
-
+//? main
 function main() {
   const canvas = document.querySelector('#c')
   const renderer = initializeRenderer(canvas)
@@ -127,7 +145,7 @@ function main() {
     renderer.render(scene, camera)
     requestAnimationFrame(render)
   }
-
+  //? kickstart animation loop
   requestAnimationFrame(render)
   //
   sendStatus(true)
