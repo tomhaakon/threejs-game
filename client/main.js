@@ -6,12 +6,12 @@ import { handleAnimation } from './js/animation/handleAnimation'
 import { CameraManager } from './js/camera/cameraManager'
 import { ModelManager } from './js/ModelManager'
 
+import { models } from './js/modelConfig'
+
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
-import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 import * as kd from 'keydrown'
 import * as detectIt from 'detect-it'
 //custom imports
@@ -44,68 +44,32 @@ function main() {
   const modelRoot = new THREE.Object3D() // a new object just for the model
 
   //camera
-
   const aspect = canvas.clientWidth / canvas.clientHeight
   const cameraManager = new CameraManager(modelRoot, scene, aspect)
   const camera = cameraManager.getCamera() // now use this camera object in your render loop
 
   //mixers
-
   const mixers = []
   let mixerInfos = []
 
-  modelRoot.traverse(function (child) {
-    if (child instanceof THREE.Mesh) {
-      child.castShadow = true
-    }
-  })
-
-  function init() {
+  function init(loadedModels) {
     loadingElem.style.display = 'none'
 
-    prepModelsAndAnimations()
-
-    Object.values(models).forEach((model, ndx) => {
-      const objectScale = 13
-      const clonedScene = SkeletonUtils.clone(model.gltf.scene)
-
-      modelRoot.scale.set(objectScale, objectScale, objectScale)
-      modelRoot.add(clonedScene)
-      scene.add(modelRoot)
-
-      modelRoot.position.set(ndx, ndx, ndx)
-      modelRoot.rotation.y = Math.PI / 4
-
-      const mixer = new THREE.AnimationMixer(clonedScene)
-      const firstClip = Object.values(model.animations)[2]
-      const action = mixer.clipAction(firstClip)
-      const actions = Object.values(model.animations).map((clip) => {
-        return mixer.clipAction(clip)
-      })
-
-      model.animations = {} // Resetting the animations for the model
-      model.gltf.animations.forEach((clip) => {
-        model.animations[clip.name] = clip
-      })
-
-      const mixerInfo = {
-        mixer,
-        actions,
-        actionNdx: -1,
-      }
-      mixerInfos.push(mixerInfo)
-      //action.play();
-      mixers.push(mixer)
-    })
+    modelManager.prepareModels()
 
     //!  gorund
     const groundTexture =
       'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg'
     new createGround(scene, groundTexture)
 
-    //! animasjon funk
-
-    //animate.setAnimation('Idle')
+    // add model to scnee
+    modelManager.addModelsToScene(
+      loadedModels,
+      modelRoot,
+      mixerInfos,
+      mixers,
+      scene
+    )
 
     //control
     if (detectIt.deviceType === 'mouseOnly') {
@@ -116,44 +80,10 @@ function main() {
     }
   }
 
-  const models = {
-    alienBug: {
-      url: 'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/alien-bug.glb',
-    },
-  }
-
-  const gltfLoader = new GLTFLoader(manager)
-  for (const model of Object.values(models)) {
-    gltfLoader.load(model.url, (gltf) => {
-      gltf.scene.traverse((node) => {
-        if (node.isMesh) {
-          node.material = new THREE.MeshStandardMaterial({ color: 0xffffff })
-        }
-      })
-
-      model.gltf = gltf
-    })
-  }
-
   const modelManager = new ModelManager(models)
   modelManager.loadAll((loadedModels) => {
-    // Now all your models are loaded and stored in loadedModels.
-    // You can proceed to use them in your scene.
-    init()
+    init(loadedModels) // Pass loadedModels to init
   })
-  function prepModelsAndAnimations() {
-    //
-    Object.values(models).forEach((model) => {
-      //
-      const animsByName = {}
-      model.gltf.animations.forEach((clip) => {
-        //
-        animsByName[clip.name] = clip
-        //
-      })
-      model.animations = animsByName
-    })
-  }
 
   //render functinons
   function resizeRendererToDisplaySize(renderer) {
