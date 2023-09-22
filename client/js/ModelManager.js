@@ -4,7 +4,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 
 export class ModelManager {
-  constructor(models) {
+  constructor(models, animationManger) {
+    this.animationManager = animationManger
     this.models = models
     this.loadedModels = {}
     this.allLoaded = false
@@ -24,6 +25,7 @@ export class ModelManager {
   }
   addModelsToScene(loadedModels, modelRoot, mixerInfos, mixers, scene) {
     Object.values(loadedModels).forEach((model, ndx) => {
+      this.animationManager.addMixerForModel(model)
       const objectScale = 13
       const clonedScene = SkeletonUtils.clone(model.gltf.scene)
 
