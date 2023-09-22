@@ -4,6 +4,7 @@ import { keyboard } from './js/controls/keyboard'
 import { createGround } from './js/createGround'
 import { handleAnimation } from './js/animation/handleAnimation'
 import { CameraManager } from './js/camera/cameraManager'
+import { ModelManager } from './js/ModelManager'
 
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
@@ -52,7 +53,7 @@ function main() {
 
   const mixers = []
   let mixerInfos = []
-  const moveSpeed = 0.1
+
   modelRoot.traverse(function (child) {
     if (child instanceof THREE.Mesh) {
       child.castShadow = true
@@ -134,8 +135,12 @@ function main() {
     })
   }
 
-  manager.onLoad = () => init()
-
+  const modelManager = new ModelManager(models)
+  modelManager.loadAll((loadedModels) => {
+    // Now all your models are loaded and stored in loadedModels.
+    // You can proceed to use them in your scene.
+    init()
+  })
   function prepModelsAndAnimations() {
     //
     Object.values(models).forEach((model) => {
