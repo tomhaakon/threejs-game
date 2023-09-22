@@ -2,11 +2,10 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js'
 
 import { touchControls } from './js/controls/touchControls'
 import { keyboard } from './js/controls/keyboard'
-import { useLightHelper } from './js/lightHelper'
+
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 import * as kd from 'keydrown'
 import * as detectIt from 'detect-it'
@@ -15,12 +14,11 @@ import { createGround } from './js/createGround'
 //custom imports
 import { sendError } from './js/errorHandler.js'
 import { sendStatus } from './js/handleStatus.js'
-
+import { LightManager } from './js/enviroment/light'
 sendError('device', detectIt.deviceType)
 
 function main() {
   //
-
   //canvas
   const canvas = document.querySelector('#c')
   const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
@@ -37,6 +35,9 @@ function main() {
   const scene = new THREE.Scene()
   scene.background = new THREE.Color('black')
 
+  //light
+
+  const lightManager = new LightManager(scene)
   //camera
 
   const modelRoot = new THREE.Object3D() // a new object just for the model
@@ -75,21 +76,6 @@ function main() {
       child.castShadow = true
     }
   })
-  //Lighting setup
-
-  const color = 0xffffff
-  const intensity = 5
-  const width = 12
-  const height = 4
-  const light = new THREE.RectAreaLight(color, intensity, width, height)
-  light.position.set(0, 10, 0)
-  light.rotation.x = THREE.MathUtils.degToRad(-90)
-  scene.add(light)
-
-  //const lightHelper = useLightHelper(light);
-
-  //const ambientLight = new THREE.AmbientLight(0x404040);
-  // scene.add(ambientLight);
 
   function init() {
     loadingElem.style.display = 'none'
@@ -144,17 +130,8 @@ function main() {
       setKeyoard.controls()
     } else {
       const controls = new touchControls(modelRoot, mixerInfos)
-      // const joystick = new JoystickController(
-      //   {
-      //     x: '70%',
-      //     y: '15%',
-      //   },
-      //   (data) => console.log(data)
-      // )
     }
-
-    //movement
-  } // FERDIG INIT
+  }
 
   const models = {
     alienBug: {
