@@ -3,6 +3,7 @@ import { touchControls } from './js/controls/touchControls'
 import { keyboard } from './js/controls/keyboard'
 import { createGround } from './js/createGround'
 import { handleAnimation } from './js/animation/handleAnimation'
+import { CameraManager } from './js/camera/cameraManager'
 
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
@@ -38,33 +39,14 @@ function main() {
   //light
 
   const lightManager = new LightManager(scene)
-  //camera
 
   const modelRoot = new THREE.Object3D() // a new object just for the model
 
-  const fov = 45
-  const aspect = 2
-  const near = 0.1
-  const far = 2000
-  const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
+  //camera
 
-  const lookDownOffset = -8
-  const offsetDistance = 50
-  const heightOffset = 30
-
-  const lookAtPosition = new THREE.Vector3(
-    modelRoot.position.x,
-    modelRoot.position.y - lookDownOffset,
-    modelRoot.position.z
-  )
-
-  camera.position.set(
-    modelRoot.position.x - offsetDistance,
-    modelRoot.position.y + heightOffset,
-    modelRoot.position.z - offsetDistance
-  )
-
-  camera.lookAt(lookAtPosition)
+  const aspect = canvas.clientWidth / canvas.clientHeight
+  const cameraManager = new CameraManager(modelRoot, scene, aspect)
+  const camera = cameraManager.getCamera() // now use this camera object in your render loop
 
   //mixers
 
@@ -185,22 +167,7 @@ function main() {
   let then = 0
   function render(now) {
     kd.tick()
-
-    // Calculate the new offset for the camera based on the model's forward direction
-    const offset = new THREE.Vector3(
-      -Math.sin(modelRoot.rotation.y) * offsetDistance,
-      heightOffset,
-      -Math.cos(modelRoot.rotation.y) * offsetDistance
-    )
-
-    camera.position.copy(modelRoot.position).add(offset)
-
-    // Adjust camera's lookAt.
-    camera.lookAt(
-      modelRoot.position.x,
-      modelRoot.position.y - lookDownOffset,
-      modelRoot.position.z
-    )
+    cameraManager.updateCamera()
 
     now *= 0.001
     const deltaTime = now - then
@@ -208,8 +175,8 @@ function main() {
 
     if (resizeRendererToDisplaySize(renderer)) {
       const canvas = renderer.domElement
-      camera.aspect = canvas.clientWidth / canvas.clientHeight
-      camera.updateProjectionMatrix()
+      const newAspect = canvas.clientWidth / canvas.clientHeight
+      cameraManager.updateAspectRatio(newAspect)
     }
 
     for (const { mixer } of mixerInfos) {
