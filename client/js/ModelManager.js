@@ -4,11 +4,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 
 export class ModelManager {
-  constructor(models, animationManger) {
+  constructor(animationManger) {
     this.animationManager = animationManger
-    this.models = models
     this.loadedModels = {}
-    this.allLoaded = false
     this.models = {
       alienBug: {
         tags: ['enemy', 'alien'],
@@ -25,6 +23,7 @@ export class ModelManager {
   }
   addModelsToScene(loadedModels, modelRoot, mixerInfos, mixers, scene) {
     Object.values(loadedModels).forEach((model, ndx) => {
+      //  console.warn(scene)
       this.animationManager.addMixerForModel(model)
       const objectScale = 13
       const clonedScene = SkeletonUtils.clone(model.gltf.scene)
@@ -54,7 +53,7 @@ export class ModelManager {
         actionNdx: -1,
       }
       mixerInfos.push(mixerInfo)
-      //action.play();
+      action.play()
       mixers.push(mixer)
     })
   }
@@ -68,36 +67,5 @@ export class ModelManager {
         model.animations = animsByName
       }
     })
-  }
-  loadAll(onComplete) {
-    const manager = new THREE.LoadingManager()
-    const gltfLoader = new GLTFLoader(manager)
-
-    let loadedCount = 0
-    const targetCount = Object.keys(this.models).length
-
-    for (const [name, modelInfo] of Object.entries(this.models)) {
-      gltfLoader.load(modelInfo.url, (gltf) => {
-        this.loadedModels[name] = {
-          ...modelInfo,
-          gltf,
-        }
-
-        loadedCount++
-        if (loadedCount === targetCount) {
-          this.allLoaded = true
-          if (onComplete) {
-            onComplete(this.loadedModels)
-          }
-        }
-      })
-    }
-  }
-
-  getModel(name) {
-    if (this.allLoaded) {
-      return this.loadedModels[name]
-    }
-    return null
   }
 }

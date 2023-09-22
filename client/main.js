@@ -7,9 +7,8 @@ import { CameraManager } from './js/camera/cameraManager'
 import { ModelManager } from './js/ModelManager'
 import { AnimationManager } from './js/animation/AnimationManager'
 
-import { models } from './js/modelConfig'
-
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
@@ -18,102 +17,119 @@ import * as detectIt from 'detect-it'
 import { sendError } from './js/errorHandler.js'
 import { sendStatus } from './js/handleStatus.js'
 sendError('device', detectIt.deviceType)
-function loadModelAsync(modelInfo) {
-  return new Promise((resolve, reject) => {
-    // your loading logic here
-    // ...
-    if (successful) {
-      resolve(loadedModel)
-    } else {
-      reject(new Error('Could not load model'))
+
+class ThreeJsGame {
+  constructor() {
+    this.canvas = document.querySelector('#c')
+    this.aspect = this.canvas.clientWidth / this.canvas.clientHeight
+    this.renderer = this.initializeRenderer(this.canvas)
+    this.manager = this.initializeLoadingManager()
+
+    this.scene = this.initializeScene()
+    this.modelRoot = new THREE.Object3D()
+    this.animationManager = new AnimationManager()
+    this.modelManager = new ModelManager(this.animationManager)
+    this.lightManager = new LightManager(this.scene)
+    this.then = 0 // For your render loop
+    const { manager, loadingElem } = this.initializeLoadingManager()
+    this.manager = manager
+    this.loadingElem = loadingElem
+    this.cameraManager = new CameraManager(
+      this.modelRoot,
+      this.scene,
+      this.aspect
+    )
+    this.camera = this.cameraManager.getCamera()
+  }
+
+  initializeRenderer(canvas) {
+    const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
+    return renderer
+  }
+
+  initializeLoadingManager() {
+    const loadingElem = document.querySelector('#loading')
+    const progressbarElem = document.querySelector('#progressbar')
+    const manager = new THREE.LoadingManager()
+    manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+      progressbarElem.style.width = `${((itemsLoaded / itemsTotal) * 100) | 0}%`
     }
-  })
-}
-async function preload() {
-  try {
-    const allModels = await Promise.all(models.map(loadModelAsync))
-    init(allModels) // Pass loaded models to init function
-  } catch (error) {
-    console.error('Failed to preload resources:', error)
-    // Handle failure, perhaps show an error message to the user
+    return { manager, loadingElem }
   }
-}
-//? canvas
-function initializeRenderer(canvas) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
-  return renderer
-}
-//? loader
-function initializeLoadingManager() {
-  const loadingElem = document.querySelector('#loading')
-  const progressbarElem = document.querySelector('#progressbar')
-  const manager = new THREE.LoadingManager()
-  manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-    progressbarElem.style.width = `${((itemsLoaded / itemsTotal) * 100) | 0}%`
+
+  initializeScene() {
+    const scene = new THREE.Scene()
+    scene.background = new THREE.Color('black')
+
+    return scene
   }
-  return { manager, loadingElem }
-}
-//? scene
-function initializeScene() {
-  const scene = new THREE.Scene()
-  scene.background = new THREE.Color('black')
-  return scene
-}
-//? main
-function main() {
-  const canvas = document.querySelector('#c')
-  const renderer = initializeRenderer(canvas)
-  const manager = initializeLoadingManager()
-  const scene = initializeScene()
-  //? light
 
-  const lightManager = new LightManager(scene)
-  const modelRoot = new THREE.Object3D() // a new object just for the model
+  async preload() {
+    const gltfLoader = new GLTFLoader(this.manager)
+    let loadedModels = {}
 
-  //? camera
-  const aspect = canvas.clientWidth / canvas.clientHeight
-  const cameraManager = new CameraManager(modelRoot, scene, aspect)
-  const camera = cameraManager.getCamera() // now use this camera object in your render loop
+    const modelInfoList = Object.entries(this.modelManager.models)
+    const modelPromises = modelInfoList.map(
+      ([name, modelInfo]) =>
+        new Promise((resolve, reject) => {
+          gltfLoader.load(
+            modelInfo.url,
+            (gltf) => {
+              loadedModels[name] = {
+                ...modelInfo,
+                gltf,
+              }
+              resolve()
+            },
+            undefined,
+            () => {
+              reject(new Error(`Failed to load model: ${name}`))
+            }
+          )
+        })
+    )
+    try {
+      await Promise.all(modelPromises)
+      this.modelManager.loadedModels = loadedModels
+      this.init()
+      // console.log('All models loaded')
+    } catch (error) {
+      console.error('Failed to preload resources:', error)
+    }
+  }
 
-  //? animation
-  const animationManager = new AnimationManager()
-  const { loadingElem } = initializeLoadingManager()
-  function init(loadedModels) {
-    loadingElem.style.display = 'none'
+  init() {
+    this.loadingElem.style.display = 'none'
+    this.modelManager.prepareModels()
 
-    modelManager.prepareModels()
-
-    //?  gorund
     const groundTexture =
       'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg'
-    new createGround(scene, groundTexture)
+    new createGround(this.scene, groundTexture)
 
-    modelManager.addModelsToScene(
-      loadedModels,
-      modelRoot,
-      animationManager.getMixerInfos(),
-      animationManager.getMixers(),
-      scene
+    this.modelManager.addModelsToScene(
+      this.modelManager.loadedModels,
+      this.modelRoot,
+      this.animationManager.getMixerInfos(),
+      this.animationManager.getMixers(),
+      this.scene
     )
 
-    //? control
     if (detectIt.deviceType === 'mouseOnly') {
-      const setKeyoard = new keyboard(modelRoot)
-      setKeyoard.controls()
+      const setKeyboard = new keyboard(this.modelRoot)
+      setKeyboard.controls()
     } else {
       const controls = new touchControls(
-        modelRoot,
-        animationManager.getMixerInfos()
+        this.modelRoot,
+        this.animationManager.getMixerInfos()
       )
     }
   }
+  main() {
+    requestAnimationFrame(this.render.bind(this))
+    sendStatus(true)
+  }
 
-  const modelManager = new ModelManager(models, animationManager)
-  modelManager.loadAll((loadedModels) => {
-    init(loadedModels)
-  })
-
-  function resizeRendererToDisplaySize(renderer) {
+  resizeRendererToDisplaySize(renderer) {
     //
     const canvas = renderer.domElement
     const width = canvas.clientWidth
@@ -124,31 +140,27 @@ function main() {
     }
     return needResize
   }
-
-  let then = 0
-  function render(now) {
-    kd.tick()
-    cameraManager.updateCamera()
-
+  render(now) {
     now *= 0.001
-    const deltaTime = now - then
-    then = now
+    const deltaTime = now - this.then
+    this.then = now
 
-    animationManager.update(deltaTime)
+    this.animationManager.update(deltaTime)
+    this.cameraManager.updateCamera()
+    kd.tick()
 
-    if (resizeRendererToDisplaySize(renderer)) {
-      const canvas = renderer.domElement
+    if (this.resizeRendererToDisplaySize(this.renderer)) {
+      const canvas = this.renderer.domElement
       const newAspect = canvas.clientWidth / canvas.clientHeight
-      cameraManager.updateAspectRatio(newAspect)
+      this.cameraManager.updateAspectRatio(newAspect)
     }
 
-    renderer.render(scene, camera)
-    requestAnimationFrame(render)
+    this.renderer.render(this.scene, this.camera)
+    requestAnimationFrame(this.render.bind(this))
   }
-  //? kickstart animation loop
-  requestAnimationFrame(render)
-  //
-  sendStatus(true)
-  //
 }
-main()
+
+const game = new ThreeJsGame()
+game.preload().then(() => {
+  game.main()
+})

@@ -9,6 +9,9 @@ export class AnimationManager {
   }
 
   addMixerForModel(model) {
+    //   console.log('model.gltf:', model.gltf)
+    // console.log('model.gltf.scene:', model.gltf?.scene)
+
     const mixer = new THREE.AnimationMixer(model.gltf.scene)
     const actions = Object.values(model.animations).map((clip) => {
       return mixer.clipAction(clip)
