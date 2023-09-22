@@ -1,20 +1,20 @@
+import { LightManager } from './js/enviroment/light'
+import { touchControls } from './js/controls/touchControls'
+import { keyboard } from './js/controls/keyboard'
+import { createGround } from './js/createGround'
+import { handleAnimation } from './js/animation/handleAnimation'
+
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
-import { touchControls } from './js/controls/touchControls'
-import { keyboard } from './js/controls/keyboard'
-
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 import * as kd from 'keydrown'
 import * as detectIt from 'detect-it'
-import { handleAnimation } from './js/animation/handleAnimation'
-import { createGround } from './js/createGround'
 //custom imports
 import { sendError } from './js/errorHandler.js'
 import { sendStatus } from './js/handleStatus.js'
-import { LightManager } from './js/enviroment/light'
 sendError('device', detectIt.deviceType)
 
 function main() {
