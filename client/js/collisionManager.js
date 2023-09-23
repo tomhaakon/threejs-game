@@ -1,26 +1,26 @@
 // CollisionManager.js
 import * as THREE from 'three'
-
 export class CollisionManager {
   constructor(modelRoot, wallMesh, radius) {
-    console.warn(radius)
     this.modelRoot = modelRoot
     this.wallMesh = wallMesh
     this.radius = radius
     //   console.log('CollisionManager.js: wallMesh, radius', wallMesh, radius)
+    //    console.warn(this.wallMesh)
   }
 
-  checkBoundary(playerPosition, circleCenter) {
-    //  console.log(playerPosition, circleCenter)
-    const dx = playerPosition.x - circleCenter.x
-    const dz = playerPosition.z - circleCenter.z
-    const distance = Math.sqrt(dx * dx + dz * dz)
-
-    if (distance >= this.radius) {
-      const angle = Math.atan2(dz, dx)
-      playerPosition.x = circleCenter.x + Math.cos(angle) * (this.radius - 1)
-      playerPosition.z = circleCenter.z + Math.sin(angle) * (this.radius - 1)
+  checkCollisionWithWall(playerPosition, wall) {
+    // console.warn('wall.getRadius()', wall.getRadius())
+    const wallCenter = new THREE.Vector2(0, 0) // Assuming wall is at (0,0) in 2D
+    const playerPos = new THREE.Vector2(playerPosition.x, playerPosition.z) // Projecting to 2D
+    const distanceToCenter = wallCenter.distanceTo(playerPos)
+    //   console.log(playerPos)
+    // console.log(playerPosition)
+    if (distanceToCenter > wall.getRadius()) {
+      // Player is outside wall
+      const direction = playerPos.sub(wallCenter).normalize()
+      playerPosition.x = wallCenter.x + direction.x * wall.getRadius()
+      playerPosition.z = wallCenter.y + direction.y * wall.getRadius()
     }
-    // console.log('cooolllllliiiiiide')
   }
 }

@@ -1,69 +1,62 @@
 import * as THREE from 'three'
+import { Wall } from './Walls' // Update this path based on your project structure
 
 export class createGround {
-  constructor(scene, textureFile) {
-    return new Promise((resolve) => {
-      this.scene = scene
-      this.textureFile = textureFile
-      this.radius = 100
-      this.segments = 64
-      this.wallMesh = null // Initialize to null
-      this.groundMesh = null // Initialize to null
+  constructor(scene, textureFile, onReady) {
+    this.scene = scene
+    this.textureFile = textureFile
+    this.radius = 100
+    this.segments = 64
 
-      const textureLoader = new THREE.TextureLoader()
-      textureLoader.load(textureFile, (texture) => {
-        texture.wrapS = THREE.RepeatWrapping
-        texture.wrapT = THREE.RepeatWrapping
-        texture.repeat.set(3, 3)
+    this.groundMesh = null
+    this.wall = new Wall(this.scene, this.radius, this.segments)
 
-        const groundGeometry = new THREE.CircleGeometry(
-          this.radius,
-          this.segments
-        )
-        const groundMaterial = new THREE.MeshStandardMaterial({ map: texture })
-        const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial)
-        groundMesh.receiveShadow = true // ground should be able to receive shadows
-        groundMesh.rotation.x = -Math.PI / 2 // Rotate the ground to be horizontal
+    this.onReady = onReady
+    this.initGround()
+    this.getGroundMesh()
+  }
 
-        // Create circular wall
-        const wallGeometry = new THREE.RingGeometry(
-          this.radius,
-          this.radius + 2,
-          this.segments
-        )
+  initGround() {
+    const textureLoader = new THREE.TextureLoader()
+    textureLoader.load(this.textureFile, (texture) => {
+      texture.wrapS = THREE.RepeatWrapping
+      texture.wrapT = THREE.RepeatWrapping
+      texture.repeat.set(3, 3)
 
-        const wallMaterial = new THREE.MeshBasicMaterial({
-          color: 0x00ff00,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.3,
-        })
-        const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial)
-        wallMesh.position.y = 1 // Raise it a bit so it doesn't overlap with the ground
-        wallMesh.rotation.x = -Math.PI / 2
-        scene.add(groundMesh) // Modify this line
-        scene.add(wallMesh)
+      const groundGeometry = new THREE.CircleGeometry(
+        this.radius,
+        this.segments
+      )
+      const groundMaterial = new THREE.MeshStandardMaterial({ map: texture })
+      this.groundMesh = new THREE.Mesh(groundGeometry, groundMaterial)
+      this.groundMesh.receiveShadow = true
+      this.groundMesh.rotation.x = -Math.PI / 2
 
-        this.wallMesh = wallMesh
-        this.groundMesh = groundMesh
+      this.scene.add(this.groundMesh)
 
-        resolve(this)
-      })
+      if (this.onReady) {
+        this.onReady()
+      }
     })
   }
+
   getGroundMesh() {
+    // console.log(this.groundMesh)
     return this.groundMesh
   }
-  getWallMesh() {
-    console.log(this.wallMesh)
-    return this.wallMesh
+  getWallInstance() {
+    return this.wall
   }
-  getRadius() {
-    return this.radius
-  }
-  getCenter() {
-    // console.log('this.groundMesh.position.clone()')
-    // return this.groundMesh.position.clone()
-    return this.radius
-  }
+
+  //   getWallMesh() {
+  //     return this.wall.getMesh()
+  //   }
+
+  //   getRadius() {
+  //     return this.radius
+  //   }
+
+  //   getCenter() {
+  //     return this.radius
+  //   }
 }

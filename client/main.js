@@ -1,3 +1,4 @@
+// main.js
 import { LightManager } from './js/enviroment/light'
 import { touchControls } from './js/controls/touchControls'
 import { keyboard } from './js/controls/keyboard'
@@ -20,20 +21,33 @@ sendError('device', detectIt.deviceType)
 
 class ThreeJsGame {
   constructor() {
+    //? canvas
     this.canvas = document.querySelector('#c')
     this.aspect = this.canvas.clientWidth / this.canvas.clientHeight
     this.renderer = this.initializeRenderer(this.canvas)
-    this.manager = this.initializeLoadingManager()
-    this.groundInstance = null
-    this.scene = this.initializeScene()
+
+    // this.manager = manager
+    //this.manager = this.initializeLoadingManager()
+    //? loader
+    const { manager, loadingElem } = this.initializeLoadingManager()
+    this.loadingElem = loadingElem
+
+    //? model
     this.modelRoot = new THREE.Object3D()
     this.animationManager = new AnimationManager()
     this.modelManager = new ModelManager(this.animationManager)
+
+    this.scene = this.initializeScene()
+    //?
+    this.collisionManager = new CollisionManager()
+    this.playerMesh = null
+    this.wallInstance = null
+
+    //?light
     this.lightManager = new LightManager(this.scene)
     this.then = 0 // For your render loop
-    const { manager, loadingElem } = this.initializeLoadingManager()
-    this.manager = manager
-    this.loadingElem = loadingElem
+
+    //? camera
     this.cameraManager = new CameraManager(
       this.modelRoot,
       this.scene,
@@ -41,6 +55,7 @@ class ThreeJsGame {
     )
     this.camera = this.cameraManager.getCamera()
 
+    this.groundInstance = null
     // this.collisionManager = new CollisionManager()
   }
 
@@ -48,6 +63,7 @@ class ThreeJsGame {
     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
     renderer.shadowMap.enabled = true // enable shadow
     renderer.shadowMap.type = THREE.PCFSoftShadowMap // default shadow type
+    console.log('Renderer init')
     return renderer
   }
 
@@ -58,12 +74,16 @@ class ThreeJsGame {
     manager.onProgress = (url, itemsLoaded, itemsTotal) => {
       progressbarElem.style.width = `${((itemsLoaded / itemsTotal) * 100) | 0}%`
     }
+    console.log('LoadingManager init')
     return { manager, loadingElem }
   }
 
   initializeScene() {
     const scene = new THREE.Scene()
     scene.background = new THREE.Color('black')
+    console.log('Scene init')
+    console.log('Model Root:', this.modelRoot)
+    scene.add(this.modelRoot)
 
     return scene
   }
@@ -95,27 +115,28 @@ class ThreeJsGame {
     try {
       await Promise.all(modelPromises)
       this.modelManager.loadedModels = loadedModels
+      this.initGround()
       this.init()
+      // console.warn(this.groundInstance.getWallMesh())
       // console.log('All models loaded')
     } catch (error) {
       console.error('Failed to preload resources:', error)
     }
+  }
+  initGround() {
+    const groundTexture =
+      'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg'
+
+    this.groundInstance = new createGround(this.scene, groundTexture)
+
+    console.log('ground init')
+    //this.groundInstance = ground
   }
 
   init() {
     this.loadingElem.style.display = 'none'
     this.modelManager.prepareModels()
 
-    const groundTexture =
-      'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg'
-
-    this.groundInstance = new createGround(this.scene, groundTexture, () => {
-      // Callback function once ground is loaded
-      this.collisionManager = new CollisionManager(
-        this.groundInstance.getWallMesh(),
-        this.groundInstance.getRadius()
-      )
-    })
     this.modelManager.addModelsToScene(
       this.modelManager.loadedModels,
       this.modelRoot,
@@ -132,14 +153,28 @@ class ThreeJsGame {
         this.animationManager.getMixerInfos()
       )
     }
+    if (this.groundInstance) {
+      console.log('Ground instance is available')
+      this.wallInstance = this.groundInstance.getWallInstance()
+    } else {
+      console.error('Ground instance is not available')
+    }
+    // console.warn(this.wallInstance)
+    // this.wallInstance = this.groundInstance.getWallInstance()
+    this.playerMesh = this.modelManager.getPlayerMesh()
+    this.modelRoot.add(this.playerMesh)
+
+    console.log('init')
   }
   main() {
+    console.log('main method triggerd')
     requestAnimationFrame(this.render.bind(this))
+    //console.log(this.groundInstance)
     sendStatus(true)
   }
 
   resizeRendererToDisplaySize(renderer) {
-    //
+    //console.log('render to displaysize')
     const canvas = renderer.domElement
     const width = canvas.clientWidth
     const height = canvas.clientHeight
@@ -150,21 +185,20 @@ class ThreeJsGame {
     return needResize
   }
   render(now) {
+    kd.tick()
     now *= 0.001
     const deltaTime = now - this.then
     this.then = now
     this.animationManager.update(deltaTime)
     this.cameraManager.updateCamera()
-    kd.tick()
-    // console.log(this.modelRoot.position)
-    // console.log(this.groundInstance.getCenter)
-    if (this.collisionManager) {
-      const circleCenter = this.groundInstance.getCenter() // Note the function call
-      this.collisionManager.checkBoundary(
-        this.modelRoot.position,
-        circleCenter // Passed as a variable
-      )
-    }
+    //   console.log(this.playerMesh)
+    // console.warn('asdasd', this.wallInstance.getRadius())
+    // console.log(this.playerMesh.position)
+    // console.warn(this.playerMesh.children[0].children[0].position)
+    this.collisionManager.checkCollisionWithWall(
+      this.modelRoot.position,
+      this.wallInstance
+    )
 
     if (this.resizeRendererToDisplaySize(this.renderer)) {
       const canvas = this.renderer.domElement

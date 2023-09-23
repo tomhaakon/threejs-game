@@ -80,4 +80,16 @@ export class ModelManager {
       }
     })
   }
+  getPlayerMesh() {
+    if (this.loadedModels['alienBug'] && this.loadedModels['alienBug'].gltf) {
+      // console.log(
+      //   'getPlayerMesh: Player mesh object:',
+      //   this.loadedModels['alienBug'].gltf.scene
+      // )
+      return this.loadedModels['alienBug'].gltf.scene
+    } else {
+      console.error('Player model is not loaded yet.')
+      return null
+    }
+  }
 }
