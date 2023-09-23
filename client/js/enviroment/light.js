@@ -38,7 +38,6 @@ export class LightManager {
     // this.addSpotLight()
   }
   addSpotLight(x, y, z, intensity, castShadow) {
-    console.log('adding spotlight')
     const spotlight = new THREE.SpotLight(0xffffff, intensity)
     spotlight.position.set(x, y, z)
     spotlight.castShadow = castShadow // Enable shadows for the spotlight

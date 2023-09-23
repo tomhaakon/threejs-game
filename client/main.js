@@ -6,7 +6,7 @@ import { handleAnimation } from './js/animation/handleAnimation'
 import { CameraManager } from './js/camera/cameraManager'
 import { ModelManager } from './js/ModelManager'
 import { AnimationManager } from './js/animation/AnimationManager'
-
+import { CollisionManager } from './js/CollisionManager'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
@@ -24,7 +24,7 @@ class ThreeJsGame {
     this.aspect = this.canvas.clientWidth / this.canvas.clientHeight
     this.renderer = this.initializeRenderer(this.canvas)
     this.manager = this.initializeLoadingManager()
-
+    this.groundInstance = null
     this.scene = this.initializeScene()
     this.modelRoot = new THREE.Object3D()
     this.animationManager = new AnimationManager()
@@ -40,6 +40,8 @@ class ThreeJsGame {
       this.aspect
     )
     this.camera = this.cameraManager.getCamera()
+
+    // this.collisionManager = new CollisionManager()
   }
 
   initializeRenderer(canvas) {
@@ -106,9 +108,14 @@ class ThreeJsGame {
 
     const groundTexture =
       'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg'
-    const groundInstance = new createGround(this.scene, groundTexture)
-    const groundMesh = groundInstance.getGroundMesh()
 
+    this.groundInstance = new createGround(this.scene, groundTexture, () => {
+      // Callback function once ground is loaded
+      this.collisionManager = new CollisionManager(
+        this.groundInstance.getWallMesh(),
+        this.groundInstance.getRadius()
+      )
+    })
     this.modelManager.addModelsToScene(
       this.modelManager.loadedModels,
       this.modelRoot,
@@ -116,7 +123,6 @@ class ThreeJsGame {
       this.animationManager.getMixers(),
       this.scene
     )
-
     if (detectIt.deviceType === 'mouseOnly') {
       const setKeyboard = new keyboard(this.modelRoot)
       setKeyboard.controls()
@@ -147,10 +153,18 @@ class ThreeJsGame {
     now *= 0.001
     const deltaTime = now - this.then
     this.then = now
-
     this.animationManager.update(deltaTime)
     this.cameraManager.updateCamera()
     kd.tick()
+    // console.log(this.modelRoot.position)
+    // console.log(this.groundInstance.getCenter)
+    if (this.collisionManager) {
+      const circleCenter = this.groundInstance.getCenter() // Note the function call
+      this.collisionManager.checkBoundary(
+        this.modelRoot.position,
+        circleCenter // Passed as a variable
+      )
+    }
 
     if (this.resizeRendererToDisplaySize(this.renderer)) {
       const canvas = this.renderer.domElement
