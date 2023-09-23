@@ -11,6 +11,7 @@ export class ModelManager {
       alienBug: {
         tags: ['enemy', 'alien'],
         url: 'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/alien-bug.glb',
+        material: new THREE.MeshLambertMaterial({ color: 0xffffff }),
         // texture: 'https://example.com/alien-bug-texture.jpg',
         // defaultAnimation: 'Idle',
         // collisionBox: { width: 1, height: 2, depth: 1 },
@@ -27,6 +28,17 @@ export class ModelManager {
       this.animationManager.addMixerForModel(model)
       const objectScale = 13
       const clonedScene = SkeletonUtils.clone(model.gltf.scene)
+      // Change the material of all meshes to a white Lambert material.
+      clonedScene.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.material.map = null // Remove texture map
+          child.material.color.set(0xffffff) // Set color to white
+          child.material.needsUpdate = true // Required when changing the material
+
+          child.castShadow = true // Object will cast shadows
+          child.receiveShadow = true // Object will receive shadows
+        }
+      })
 
       modelRoot.scale.set(objectScale, objectScale, objectScale)
       modelRoot.add(clonedScene)

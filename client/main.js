@@ -44,6 +44,8 @@ class ThreeJsGame {
 
   initializeRenderer(canvas) {
     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
+    renderer.shadowMap.enabled = true // enable shadow
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap // default shadow type
     return renderer
   }
 
@@ -104,7 +106,8 @@ class ThreeJsGame {
 
     const groundTexture =
       'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg'
-    new createGround(this.scene, groundTexture)
+    const groundInstance = new createGround(this.scene, groundTexture)
+    const groundMesh = groundInstance.getGroundMesh()
 
     this.modelManager.addModelsToScene(
       this.modelManager.loadedModels,
