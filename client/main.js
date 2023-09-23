@@ -7,7 +7,7 @@ import { handleAnimation } from './js/animation/handleAnimation'
 import { CameraManager } from './js/camera/cameraManager'
 import { ModelManager } from './js/ModelManager'
 import { AnimationManager } from './js/animation/AnimationManager'
-import { CollisionManager } from './js/CollisionManager'
+import { CollisionManager } from './js/collisionManager'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
