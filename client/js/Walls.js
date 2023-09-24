@@ -20,7 +20,7 @@ export class Wall {
       color: 0xffffff,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.02,
+      opacity: 0.05,
     })
     this.wallMesh = new THREE.Mesh(wallGeometry, wallMaterial)
     this.wallMesh.position.y = 1
