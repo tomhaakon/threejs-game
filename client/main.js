@@ -162,7 +162,7 @@ class ThreeJsGame {
     // console.warn(this.wallInstance)
     // this.wallInstance = this.groundInstance.getWallInstance()
     this.playerMesh = this.modelManager.getPlayerMesh()
-    this.modelRoot.add(this.playerMesh)
+   // this.modelRoot.add(this.playerMesh)
 
     console.log('init')
   }
