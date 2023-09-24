@@ -1,3 +1,4 @@
+//handleAnimation.js
 import * as THREE from 'three'
 
 export class handleAnimation {

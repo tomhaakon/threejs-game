@@ -82,7 +82,7 @@ class ThreeJsGame {
     const scene = new THREE.Scene()
     scene.background = new THREE.Color('black')
     console.log('Scene init')
-    console.log('Model Root:', this.modelRoot)
+    // console.log('Model Root:', this.modelRoot)
     scene.add(this.modelRoot)
 
     return scene
@@ -145,7 +145,10 @@ class ThreeJsGame {
       this.scene
     )
     if (detectIt.deviceType === 'mouseOnly') {
-      const setKeyboard = new keyboard(this.modelRoot)
+      const setKeyboard = new keyboard(
+        this.modelRoot,
+        this.animationManager.getMixerInfos()
+      )
       setKeyboard.controls()
     } else {
       const controls = new touchControls(
@@ -162,7 +165,7 @@ class ThreeJsGame {
     // console.warn(this.wallInstance)
     // this.wallInstance = this.groundInstance.getWallInstance()
     this.playerMesh = this.modelManager.getPlayerMesh()
-   // this.modelRoot.add(this.playerMesh)
+    // this.modelRoot.add(this.playerMesh)
 
     console.log('init')
   }
