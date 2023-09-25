@@ -9,14 +9,14 @@ export class HandleAnimation {
     this.mixerInfos.forEach((mixerInfo) => {
       const actions = mixerInfo.actions
 
-      const actionToPlay = actions.find(
-        (action) => action.getClip().name === name
-      )
+      // const actionToPlay = actions.find(
+      //   (action) => action.getClip().name === name
+      // )
 
-      if (actionToPlay) {
-        actions.forEach((action) => action.stop())
-        actionToPlay.play()
-      }
+      // if (actionToPlay) {
+      //   actions.forEach((action) => action.stop())
+      //  // actionToPlay.play()
+      // }
       if (name === 'Rotate') {
         let action = actions[3]
         action.stop()

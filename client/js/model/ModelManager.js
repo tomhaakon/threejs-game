@@ -64,7 +64,7 @@ export class ModelManager {
         actionNdx: -1,
       }
       mixerInfos.push(mixerInfo)
-      action.play()
+      //action.play()
       mixers.push(mixer)
     })
   }

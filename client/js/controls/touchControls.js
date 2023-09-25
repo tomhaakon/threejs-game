@@ -1,112 +1,121 @@
-  // TouchControls.js
-  import * as THREE from 'three'
-  import JoystickController from 'joystick-controller'
-  import { MoveModel } from '../model/ModelMovement'
+// TouchControls.js
+import * as THREE from 'three'
+import JoystickController from 'joystick-controller'
+import { MoveModel } from '../model/ModelMovement'
 
-  export class TouchControls {
-    constructor(modelRoot, mixerInfos) {
-      this.mixerInfos = mixerInfos
-      this.modelMover = new MoveModel(modelRoot)
-      this.direction = ''
-      this.level = 0
+export class TouchControls {
+  constructor(modelRoot, mixerInfos) {
+    this.mixerInfos = mixerInfos
+    this.modelMover = new MoveModel(modelRoot)
+    this.direction = ''
 
-      this.touchZones = {
-        leveledX: 0,
-        leveledY: 0,
+    this.isMoving = false
+    this.isIdling = true
+    this.setIdle = false
 
-        zoneTop: false,
-        zoneBottom: false,
+    this.touchStates = {
+      leveledX: 0,
+      leveledY: 0,
 
-        zoneRight: false,
-        zoneRightTop: false,
-        zoneRightBottom: false,
-
-        zoneLeft: false,
-        zoneLeftTop: false,
-        zoneLeftBottom: false,
-      }
-      this.initJoystick()
-      this.animate()
+      zoneTop: false,
+      zoneBottom: false,
+      zoneRight: false,
+      zoneLeft: false,
     }
-    animate() {
-      this.moveModel()
+    this.initJoystick()
+    this.animate()
+    this.checkIdle()
+  }
 
-      requestAnimationFrame(this.animate.bind(this))
-    }
+  initJoystick() {
+    const joystick = new JoystickController(
+      {
+        maxRange: 30,
+        level: 10,
+        radius: 50,
+        joystickRadius: 30,
+        opacity: 0.5,
+        leftToRight: false,
+        bottomToUp: true,
+        containerClass: 'joystick-container',
+        controllerClass: 'joystick-controller',
+        joystickClass: 'joystick',
+        distortion: true,
+        x: '25%',
+        y: '25%',
+        mouseClickButton: 'ALL',
+        hideContextMenu: false,
+      },
+      (data) => {
+        this.touchZones(data)
 
-    initJoystick() {
-      const joystick = new JoystickController(
-        {
-          maxRange: 30,
-          level: 10,
-          radius: 50,
-          joystickRadius: 30,
-          opacity: 0.5,
-          leftToRight: false,
-          bottomToUp: true,
-          containerClass: 'joystick-container',
-          controllerClass: 'joystick-controller',
-          joystickClass: 'joystick',
-          distortion: true,
-          x: '25%',
-          y: '25%',
-          mouseClickButton: 'ALL',
-          hideContextMenu: false,
-        },
-        (data) => {
-          this.updateTouchZones(data)
-        }
-      )
-    }
-
-    updateTouchZones(data) {
-      const { leveledX, leveledY } = data
-
-      this.touchZones.leveledX = leveledX // throttle X -10 0 10
-      this.touchZones.leveledY = leveledY // throttle Y -10 0 10
-
-      // gass
-      this.touchZones.zoneTop = leveledY > 0 // hvis throtte er høyere enn 8
-      //reverse
-      this.touchZones.zoneBottom = leveledY <= -9 // hvis throttle er mindre enn -8
-      //sving høyre kjapt
-      this.touchZones.zoneRightTop = leveledY >= 7 && leveledX > 0
-      //sving høyre tregt
-      this.touchZones.zoneRightBottom = leveledY < 7 && leveledX > 0
-      // sving venstre kjapt
-      this.touchZones.zoneLeftTop = leveledY >= 7 && leveledX < 0
-      // sving venstre tregt
-      this.touchZones.zoneLeftBottom = leveledY < 7 && leveledX < 0
-
-      this.touchZones.zoneLeft = leveledX < 0
-    }
-
-    moveModel() {
-      this.modelMover.setMixerInfos(this.mixerInfos)
-
-      //sving venstre bunn
-      if (this.touchZones.zoneLeftBottom) {
-        this.modelMover.moveNow('fast-left', this.touchZones)
+        //  console.log(data)
       }
-      //sving venstre top
-      if (this.touchZones.zoneLeftTop) {
-        this.modelMover.moveNow('slow-left', this.touchZones)
-      }
-      //sving høyre bunn
-      if (this.touchZones.zoneRightBottom) {
-        this.modelMover.moveNow('fast-right', this.touchZones)
-      }
-      //sving høyre level 2
-      if (this.touchZones.zoneRightTop) {
-        this.modelMover.moveNow('slow-right', this.touchZones)
-      }
-      // gass
-      if (this.touchZones.zoneTop) {
-        this.modelMover.moveNow('Forward', this.touchZones)
-      }
-      // reverse
-      if (this.touchZones.zoneBottom) {
-        this.modelMover.moveNow('Reverse', this.touchZones)
-      }
+    )
+  }
+  animate() {
+    this.moveModel()
+
+    requestAnimationFrame(this.animate.bind(this))
+
+    // console.log(this.isMoving)
+  }
+  touchZones(data) {
+    const { leveledX, leveledY } = data
+    this.touchStates.leveledX = leveledX
+    this.touchStates.leveledY = leveledY
+    this.touchStates.zoneTop = leveledY > 0
+    this.touchStates.zoneBottom = leveledY < 0
+    this.touchStates.zoneLeft = leveledX < 0
+    this.touchStates.zoneRight = leveledX > 0
+  }
+  checkIdle() {
+    // console.log('checking idle')
+    if (!this.setIdle && !this.isMoving) {
+      this.modelMover.move('Idle', this.touchStates)
+      this.setIdle = true
+      this.isIdling = true
+    } else {
+      // this.setIdle = false
     }
   }
+  moveModel() {
+    this.modelMover.setMixerInfos(this.mixerInfos)
+    // gass
+    if (this.touchStates.zoneTop && this.touchStates.leveledY >= 7) {
+      this.modelMover.move('Run', this.touchStates)
+      this.isIdling = false
+      this.setIdle = false
+      this.isMoving = true
+
+      // reverse
+    } else if (this.touchStates.zoneBottom && this.touchStates.leveledY <= -7) {
+      this.modelMover.move('Reverse', this.touchStates)
+      this.isIdling = false
+      this.setIdle = false
+      this.isMoving = true
+      // left
+    } else if (
+      this.touchStates.zoneLeft &&
+      (this.touchStates.leveledY < 7 || this.touchStates.leveledY > -7)
+    ) {
+      this.modelMover.move('RotateLeft', this.touchStates)
+      this.isIdling = false
+      this.setIdle = false
+      this.isMoving = true
+      // right
+    } else if (
+      this.touchStates.zoneRight &&
+      (this.touchStates.leveledY < 7 || this.touchStates.leveledY > -7)
+    ) {
+      this.modelMover.move('RotateRight', this.touchStates)
+      this.isIdling = false
+      this.setIdle = false
+      this.isMoving = true
+    } else {
+      this.isMoving = false
+      this.isIdling = true
+      this.checkIdle()
+    }
+  }
+}

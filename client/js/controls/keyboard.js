@@ -8,73 +8,90 @@ export class keyboard {
     this.modelMover = new MoveModel(modelRoot)
     this.modelRoot = modelRoot
     this.mixerInfos = mixerInfos
-    this.isRunning = false
+    this.nothingPressed = true
     this.keys = {
       W: false,
       A: false,
       S: false,
       D: false,
     }
+
+    //console.log(this.nothingPressed)
   }
-  handleMovement() {
-    if (this.keys.W && this.keys.A) {
-      this.modelMover.moveNow('ForwardLeft')
-    } else if (this.keys.W && this.keys.D) {
-      this.modelMover.moveNow('ForwardRight')
-    } else if (this.keys.W) {
-      this.modelMover.moveNow('Forward')
-    } else if (this.keys.A) {
-      this.modelMover.moveNow('RotateLeft')
-    } else if (this.keys.D) {
-      this.modelMover.moveNow('RotateRight')
-    } else if (this.keys.S) {
-      this.modelMover.moveNow('Reverse')
-    }
-  }
-  handleIdle() {
-    if (!Object.values(this.keys).some((val) => val)) {
-      this.modelMover.moveNow('Idle')
-    } else {
-      this.handleMovement() // If some keys are still pressed, handle accordingly
-    }
+  checkIdle() {
+    if (this.nothingPressed) {
+      this.modelMover.move('Idle')
+      // console.warn('idle')
+    } else return
   }
   controls() {
     //set animation
     this.modelMover.setMixerInfos(this.mixerInfos)
-
     kd.W.down(() => {
+      this.nothingPressed = false
       this.keys.W = true
-      this.handleMovement()
+      // console.log('W-down')
+      this.modelMover.move('Run')
     })
     kd.W.up(() => {
       this.keys.W = false
-      this.handleIdle()
+      if (!this.keys.A && !this.keys.S && !this.keys.D) {
+        this.nothingPressed = true
+      }
+      this.checkIdle()
     })
     kd.A.down(() => {
+      this.nothingPressed = false
       this.keys.A = true
-      this.handleMovement()
+      // console.log('A-down')
+      this.modelMover.move('RotateLeft')
     })
     kd.A.up(() => {
       this.keys.A = false
-      this.handleIdle()
+      if (!this.keys.W && !this.keys.S && !this.keys.D) {
+        this.nothingPressed = true
+      }
+      this.checkIdle()
     })
     kd.D.down(() => {
+      this.nothingPressed = false
       this.keys.D = true
-      this.handleMovement()
+      //  console.log('A-down')
+      this.modelMover.move('RotateRight')
     })
     kd.D.up(() => {
+      if (!this.keys.A && !this.keys.S && !this.keys.W) {
+        this.nothingPressed = true
+      }
       this.keys.D = false
-      this.handleIdle()
+      this.checkIdle()
     })
     kd.S.down(() => {
+      this.nothingPressed = false
       this.keys.S = true
-      this.handleMovement()
+      //console.log('S-down')
+      this.modelMover.move('Reverse')
     })
     kd.S.up(() => {
+      if (!this.keys.A && !this.keys.D && !this.keys.W) {
+        this.nothingPressed = true
+      }
       this.keys.S = false
-      this.handleIdle()
+      this.checkIdle()
     })
 
-    kd.run(() => {})
+    kd.run(() => {
+      if (
+        this.keys.W === false &&
+        this.keys.A === false &&
+        this.keys.S === false &&
+        this.keys.D === false
+      ) {
+        this.nothingPressed = true
+      } else {
+        this.nothingPressed = false
+      }
+    })
+    this.checkIdle()
   }
 }
