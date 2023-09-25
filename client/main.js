@@ -1,23 +1,22 @@
-// main.js
-import { LightManager } from './js/enviroment/light'
-import { touchControls } from './js/controls/touchControls'
-import { keyboard } from './js/controls/keyboard'
-import { createGround } from './js/createGround'
-import { handleAnimation } from './js/animation/handleAnimation'
-import { CameraManager } from './js/camera/cameraManager'
-import { ModelManager } from './js/ModelManager'
-import { AnimationManager } from './js/animation/AnimationManager'
-import { CollisionManager } from './js/CollisionManager'
+// Main.js
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-
-import * as kd from 'keydrown'
 import * as detectIt from 'detect-it'
-import { sendError } from './js/errorHandler.js'
-import { sendStatus } from './js/handleStatus.js'
-sendError('device', detectIt.deviceType)
+import * as kd from 'keydrown'
+
+import { LightManager } from './js/enviroment/Light' // fil for hjelp til å se hvor lyset kommer fra
+import { TouchControls } from './js/controls/TouchControls' // touch
+import { keyboard } from './js/controls/Keyboard' // keyboard
+import { CreateGround } from './js/enviroment/CreateGround' // gulv med textur
+import { CameraManager } from './js/camera/CameraManager' // camera
+import { ModelManager } from './js/model/ModelManager' // model justering
+import { AnimationManager } from './js/animation/AnimationManager' // animasjoner
+import { CollisionManager } from './js/CollisionManager' // kollisjon til vegg
+
+import { NotifyScreen } from './js/NotifyScreen.js' // fil for kun for hjelp til debug
+import { SendStatus } from './js/HandleStatus.js' // fil for debug hjelp
+
+NotifyScreen('device', detectIt.deviceType)
 
 class ThreeJsGame {
   constructor() {
@@ -26,8 +25,6 @@ class ThreeJsGame {
     this.aspect = this.canvas.clientWidth / this.canvas.clientHeight
     this.renderer = this.initializeRenderer(this.canvas)
 
-    // this.manager = manager
-    //this.manager = this.initializeLoadingManager()
     //? loader
     const { manager, loadingElem } = this.initializeLoadingManager()
     this.loadingElem = loadingElem
@@ -43,10 +40,6 @@ class ThreeJsGame {
     this.playerMesh = null
     this.wallInstance = null
 
-    //?light
-    this.lightManager = new LightManager(this.scene)
-    this.then = 0 // For your render loop
-
     //? camera
     this.cameraManager = new CameraManager(
       this.modelRoot,
@@ -55,15 +48,20 @@ class ThreeJsGame {
     )
     this.camera = this.cameraManager.getCamera()
 
+    //? enviroment
     this.groundInstance = null
-    // this.collisionManager = new CollisionManager()
+
+    //? light
+    this.lightManager = new LightManager(this.scene)
+    this.then = 0
   }
 
   initializeRenderer(canvas) {
     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
-    renderer.shadowMap.enabled = true // enable shadow
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap // default shadow type
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     console.log('Renderer init')
+
     return renderer
   }
 
@@ -75,22 +73,22 @@ class ThreeJsGame {
       progressbarElem.style.width = `${((itemsLoaded / itemsTotal) * 100) | 0}%`
     }
     console.log('LoadingManager init')
+
     return { manager, loadingElem }
   }
 
   initializeScene() {
     const scene = new THREE.Scene()
     scene.background = new THREE.Color('black')
-    console.log('Scene init')
-    // console.log('Model Root:', this.modelRoot)
     scene.add(this.modelRoot)
+    console.log('Scene init')
 
     return scene
   }
 
   async preload() {
     const gltfLoader = new GLTFLoader(this.manager)
-    let loadedModels = {}
+    const loadedModels = {}
 
     const modelInfoList = Object.entries(this.modelManager.models)
     const modelPromises = modelInfoList.map(
@@ -117,8 +115,6 @@ class ThreeJsGame {
       this.modelManager.loadedModels = loadedModels
       this.initGround()
       this.init()
-      // console.warn(this.groundInstance.getWallMesh())
-      // console.log('All models loaded')
     } catch (error) {
       console.error('Failed to preload resources:', error)
     }
@@ -127,10 +123,8 @@ class ThreeJsGame {
     const groundTexture =
       'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg'
 
-    this.groundInstance = new createGround(this.scene, groundTexture)
-
+    this.groundInstance = new CreateGround(this.scene, groundTexture)
     console.log('ground init')
-    //this.groundInstance = ground
   }
 
   init() {
@@ -151,7 +145,7 @@ class ThreeJsGame {
       )
       setKeyboard.controls()
     } else {
-      const controls = new touchControls(
+      const controls = new TouchControls(
         this.modelRoot,
         this.animationManager.getMixerInfos()
       )
@@ -162,22 +156,19 @@ class ThreeJsGame {
     } else {
       console.error('Ground instance is not available')
     }
-    // console.warn(this.wallInstance)
-    // this.wallInstance = this.groundInstance.getWallInstance()
-    this.playerMesh = this.modelManager.getPlayerMesh()
-    // this.modelRoot.add(this.playerMesh)
+
+    //this.playerMesh = this.modelManager.getPlayerMesh()
 
     console.log('init')
   }
   main() {
-    console.log('main method triggerd')
     requestAnimationFrame(this.render.bind(this))
-    //console.log(this.groundInstance)
-    sendStatus(true)
+    console.log('main method triggerd')
+
+    SendStatus(true) // et lite ikon opp til venstre som viser at main() kjører (debug)
   }
 
   resizeRendererToDisplaySize(renderer) {
-    //console.log('render to displaysize')
     const canvas = renderer.domElement
     const width = canvas.clientWidth
     const height = canvas.clientHeight
@@ -194,10 +185,6 @@ class ThreeJsGame {
     this.then = now
     this.animationManager.update(deltaTime)
     this.cameraManager.updateCamera()
-    //   console.log(this.playerMesh)
-    // console.warn('asdasd', this.wallInstance.getRadius())
-    // console.log(this.playerMesh.position)
-    // console.warn(this.playerMesh.children[0].children[0].position)
     this.collisionManager.checkCollisionWithWall(
       this.modelRoot.position,
       this.wallInstance

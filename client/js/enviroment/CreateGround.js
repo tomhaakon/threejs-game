@@ -1,7 +1,8 @@
+// CreateGround.js
 import * as THREE from 'three'
-import { Wall } from './Walls' // Update this path based on your project structure
+import { Wall } from './Walls'
 
-export class createGround {
+export class CreateGround {
   constructor(scene, textureFile, onReady) {
     this.scene = scene
     this.textureFile = textureFile
@@ -41,22 +42,9 @@ export class createGround {
   }
 
   getGroundMesh() {
-    // console.log(this.groundMesh)
     return this.groundMesh
   }
   getWallInstance() {
     return this.wall
   }
-
-  //   getWallMesh() {
-  //     return this.wall.getMesh()
-  //   }
-
-  //   getRadius() {
-  //     return this.radius
-  //   }
-
-  //   getCenter() {
-  //     return this.radius
-  //   }
 }

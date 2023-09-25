@@ -1,63 +1,80 @@
-// keyboard.js
+// Keyboard.js
 import * as THREE from 'three'
 import * as kd from 'keydrown'
-import { moveModel } from '../movement/moveModel'
+import { MoveModel } from '../model/ModelMovement'
 
 export class keyboard {
   constructor(modelRoot, mixerInfos) {
-    this.modelMover = new moveModel(modelRoot)
+    this.modelMover = new MoveModel(modelRoot)
     this.modelRoot = modelRoot
     this.mixerInfos = mixerInfos
     this.isRunning = false
+    this.keys = {
+      W: false,
+      A: false,
+      S: false,
+      D: false,
+    }
   }
-
+  handleMovement() {
+    if (this.keys.W && this.keys.A) {
+      this.modelMover.moveNow('ForwardLeft')
+    } else if (this.keys.W && this.keys.D) {
+      this.modelMover.moveNow('ForwardRight')
+    } else if (this.keys.W) {
+      this.modelMover.moveNow('Forward')
+    } else if (this.keys.A) {
+      this.modelMover.moveNow('RotateLeft')
+    } else if (this.keys.D) {
+      this.modelMover.moveNow('RotateRight')
+    } else if (this.keys.S) {
+      this.modelMover.moveNow('Reverse')
+    }
+  }
+  handleIdle() {
+    if (!Object.values(this.keys).some((val) => val)) {
+      this.modelMover.moveNow('Idle')
+    } else {
+      this.handleMovement() // If some keys are still pressed, handle accordingly
+    }
+  }
   controls() {
     //set animation
     this.modelMover.setMixerInfos(this.mixerInfos)
 
     kd.W.down(() => {
-      this.isRunning = true
-      this.modelMover.moveModelWithKeyboard('forward', this.modelRoot) //
+      this.keys.W = true
+      this.handleMovement()
     })
     kd.W.up(() => {
-      this.isRunning = false
-      this.modelMover.moveModelWithKeyboard('idle', this.modelRoot) //
+      this.keys.W = false
+      this.handleIdle()
     })
     kd.A.down(() => {
-      if (this.isRunning) {
-        this.modelMover.moveModelWithKeyboard('slow-left', this.modelRoot)
-      } else {
-        this.modelMover.moveModelWithKeyboard('fast-left', this.modelRoot)
-      }
+      this.keys.A = true
+      this.handleMovement()
     })
     kd.A.up(() => {
-      if (!this.isRunning) {
-        this.modelMover.moveModelWithKeyboard('idle', this.modelRoot) //
-      }
+      this.keys.A = false
+      this.handleIdle()
     })
     kd.D.down(() => {
-      if (this.isRunning) {
-        this.modelMover.moveModelWithKeyboard('slow-right', this.modelRoot)
-      } else {
-        this.modelMover.moveModelWithKeyboard('fast-right', this.modelRoot)
-      }
+      this.keys.D = true
+      this.handleMovement()
     })
     kd.D.up(() => {
-      if (!this.isRunning) {
-        this.modelMover.moveModelWithKeyboard('idle', this.modelRoot) //
-      }
+      this.keys.D = false
+      this.handleIdle()
     })
-    // console.log(this.isRunning)
-    // kd.A.down(() => {
-    //   this.modelMover.moveModelWithKeyboard('left', this.modelRoot)
-    // })
-    // kd.A.up(() => {
-    //   this.modelMover.moveModelWithKeyboard('idle', this.modelRoot) //
-    // })
+    kd.S.down(() => {
+      this.keys.S = true
+      this.handleMovement()
+    })
+    kd.S.up(() => {
+      this.keys.S = false
+      this.handleIdle()
+    })
 
-    kd.S.down(() => {})
-
-    kd.S.up(() => {})
     kd.run(() => {})
   }
 }
