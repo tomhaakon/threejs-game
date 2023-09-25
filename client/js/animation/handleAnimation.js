@@ -1,40 +1,43 @@
-//HandleAnimation.js
 import * as THREE from 'three'
 
 export class HandleAnimation {
   constructor(mixerInfos) {
     this.mixerInfos = mixerInfos
+    this.activeAction = null // Keep track of the active action
   }
+
   setAnimation(name) {
-    this.mixerInfos.forEach((mixerInfo) => {
-      const actions = mixerInfo.actions
+    const actions = this.mixerInfos[1].actions
 
-      // const actionToPlay = actions.find(
-      //   (action) => action.getClip().name === name
-      // )
+    let actionToPlay = null
+    switch (name) {
+      case 'Idle':
+        actionToPlay = actions[2]
+        actionToPlay.timeScale = 2.0
+        break
+      case 'Run':
+        actionToPlay = actions[3]
+        actionToPlay.timeScale = 1.0
+        break
+      case 'Rotate':
+        actionToPlay = actions[3]
+        actionToPlay.timeScale = 2.0
+        break
+      case 'Reverse':
+        actionToPlay = actions[3]
+        actionToPlay.timeScale = -1
+        break
+    }
 
-      // if (actionToPlay) {
-      //   actions.forEach((action) => action.stop())
-      //  // actionToPlay.play()
-      // }
-      if (name === 'Rotate') {
-        let action = actions[3]
-        action.stop()
-        action.timeScale = 1.0
-        action.play()
-      }
-      if (name === 'RotateFast') {
-        let action = actions[3]
-        action.stop()
-        action.timeScale = 2.0
-        action.play()
-      }
-      if (name === 'Reverse') {
-        let action = actions[3]
-        action.stop()
-        action.timeScale = -1
-        action.play()
-      }
-    })
+    if (this.activeAction && this.activeAction !== actionToPlay) {
+      // Stop the previous action before playing the new one
+      this.activeAction.stop()
+    }
+
+    // Play the selected action
+    if (actionToPlay) {
+      actionToPlay.play()
+      this.activeAction = actionToPlay // Update the active action
+    }
   }
 }

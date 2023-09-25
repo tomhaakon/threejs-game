@@ -9,6 +9,8 @@ export class keyboard {
     this.modelRoot = modelRoot
     this.mixerInfos = mixerInfos
     this.nothingPressed = true
+    this.doublePress = false
+    this.runOnly = true
     this.keys = {
       W: false,
       A: false,
@@ -28,22 +30,30 @@ export class keyboard {
     //set animation
     this.modelMover.setMixerInfos(this.mixerInfos)
     kd.W.down(() => {
+      this.runOnly = true
       this.nothingPressed = false
       this.keys.W = true
-      // console.log('W-down')
-      this.modelMover.move('Run')
+      this.doublePress = this.keys.W && (this.keys.A || this.keys.D)
+
+      if (this.keys.W && (!this.keys.A || !this.keys.D)) {
+        this.runOnly = true
+      } else {
+        this.runOnly = false
+      }
+
+      this.modelMover.move('Run', 10, this.doublePress, this.runOnly)
     })
     kd.W.up(() => {
+      this.runOnly = false
       this.keys.W = false
-      if (!this.keys.A && !this.keys.S && !this.keys.D) {
-        this.nothingPressed = true
-      }
+      this.nothingPressed = !this.keys.A && !this.keys.S && !this.keys.D
+      this.doublePress = false
       this.checkIdle()
     })
     kd.A.down(() => {
+      this.runOnly = this.keys.W && (!this.keys.A || !this.keys.D)
       this.nothingPressed = false
       this.keys.A = true
-      // console.log('A-down')
       this.modelMover.move('RotateLeft')
     })
     kd.A.up(() => {
@@ -56,7 +66,6 @@ export class keyboard {
     kd.D.down(() => {
       this.nothingPressed = false
       this.keys.D = true
-      //  console.log('A-down')
       this.modelMover.move('RotateRight')
     })
     kd.D.up(() => {
@@ -67,16 +76,23 @@ export class keyboard {
       this.checkIdle()
     })
     kd.S.down(() => {
+      this.runOnly = true
       this.nothingPressed = false
       this.keys.S = true
-      //console.log('S-down')
-      this.modelMover.move('Reverse')
+      this.doublePress = this.keys.S && (this.keys.A || this.keys.D)
+
+      if (this.keys.S && (!this.keys.A || !this.keys.D)) {
+        this.runOnly = true
+      } else {
+        this.runOnly = false
+      }
+      this.modelMover.move('Reverse', 10, this.doublePress, this.runOnly)
     })
     kd.S.up(() => {
-      if (!this.keys.A && !this.keys.D && !this.keys.W) {
-        this.nothingPressed = true
-      }
+      this.runOnly = false
       this.keys.S = false
+      this.nothingPressed = !this.keys.A && !this.keys.D && !this.keys.W
+      this.doublePress = false
       this.checkIdle()
     })
 

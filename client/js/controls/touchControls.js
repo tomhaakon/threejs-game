@@ -9,6 +9,7 @@ export class TouchControls {
     this.modelMover = new MoveModel(modelRoot)
     this.direction = ''
 
+    this.isRotating = false
     this.isMoving = false
     this.isIdling = true
     this.setIdle = false
@@ -25,6 +26,7 @@ export class TouchControls {
     this.initJoystick()
     this.animate()
     this.checkIdle()
+    this.modelMover.setMixerInfos(this.mixerInfos)
   }
 
   initJoystick() {
@@ -70,7 +72,6 @@ export class TouchControls {
     this.touchStates.zoneRight = leveledX > 0
   }
   checkIdle() {
-    // console.log('checking idle')
     if (!this.setIdle && !this.isMoving) {
       this.modelMover.move('Idle', this.touchStates)
       this.setIdle = true
@@ -80,9 +81,10 @@ export class TouchControls {
     }
   }
   moveModel() {
-    this.modelMover.setMixerInfos(this.mixerInfos)
+    //    console.log(this.mixerInfos)
+
     // gass
-    if (this.touchStates.zoneTop && this.touchStates.leveledY >= 7) {
+    if (this.touchStates.zoneTop && this.touchStates.leveledY >= 9) {
       this.modelMover.move('Run', this.touchStates)
       this.isIdling = false
       this.setIdle = false
@@ -97,24 +99,27 @@ export class TouchControls {
       // left
     } else if (
       this.touchStates.zoneLeft &&
-      (this.touchStates.leveledY < 7 || this.touchStates.leveledY > -7)
+      (this.touchStates.leveledY < 9 || this.touchStates.leveledY > -7)
     ) {
       this.modelMover.move('RotateLeft', this.touchStates)
       this.isIdling = false
       this.setIdle = false
       this.isMoving = true
+      this.isRotating = true
       // right
     } else if (
       this.touchStates.zoneRight &&
-      (this.touchStates.leveledY < 7 || this.touchStates.leveledY > -7)
+      (this.touchStates.leveledY < 9 || this.touchStates.leveledY > -7)
     ) {
       this.modelMover.move('RotateRight', this.touchStates)
       this.isIdling = false
       this.setIdle = false
       this.isMoving = true
+      this.isRotating = true
     } else {
       this.isMoving = false
       this.isIdling = true
+
       this.checkIdle()
     }
   }
