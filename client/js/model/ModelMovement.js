@@ -5,21 +5,18 @@ import { HandleAnimation } from '../animation/HandleAnimation'
 export class MoveModel {
   constructor(modelRoot) {
     this.modelRoot = modelRoot
+
     this.animationState = 'Idle'
-    this.setAnimationState = false
 
     this.touchStates = null
 
-    this.animate = null
-    this.newAnimationState = ''
-    this.baseMoveSpeed = 0.1
+    this.idleSpeed = 0
+
+    this.minMoveSpeed = 0.1
     this.rotateSpeed = 0.01
 
-    this.maxMoveSpeed = 0.3 // or whatever you consider as max speed
-    this.maxRotateSpeed = 0.02 // or whatever you consider as max rotation speed
-    // Inside MoveModel's constructor
-    this.currentMoveSpeed = this.baseMoveSpeed
-    this.currentRotateSpeed = this.rotateSpeed
+    this.maxMoveSpeed = 0.3
+    this.maxRotateSpeed = 0.02
 
     this.activeKeys = new Set()
     this.setupKeyboardListeners()
@@ -46,20 +43,21 @@ export class MoveModel {
   ) {
     if (!this.modelRoot || !this.animate) return
 
+    //  console.log(direction)
     let moveDirection = 'Idle'
     let rotateDirection = 'Idle'
 
-    if (this.activeKeys.has('w')) moveDirection = 'Run'
-    if (this.activeKeys.has('s')) moveDirection = 'Reverse'
-    if (this.activeKeys.has('a')) rotateDirection = 'RotateLeft'
-    if (this.activeKeys.has('d')) rotateDirection = 'RotateRight'
+    // if (this.activeKeys.has('w')) moveDirection = 'Run'
+    // if (this.activeKeys.has('s')) moveDirection = 'Reverse'
+    // if (this.activeKeys.has('a')) rotateDirection = 'RotateLeft'
+    // if (this.activeKeys.has('d')) rotateDirection = 'RotateRight'
 
     const speedFactor = touchZones.leveledY / 10
     let currentRotateSpeed = this.rotateSpeed
 
     let moveSpeed =
-      this.baseMoveSpeed +
-      (this.maxMoveSpeed - this.baseMoveSpeed) * speedFactor
+      this.minMoveSpeed + (this.maxMoveSpeed - this.minMoveSpeed) * speedFactor
+    // console.log(currentRotateSpeed)
 
     if (inputType === 'keyboard') {
       moveSpeed *= 10
@@ -107,41 +105,52 @@ export class MoveModel {
       default:
         console.warn(`Unknown direction: ${direction}`)
     }
+    this.updateSpeedometer(this.idleSpeed, this.idleSpeed)
     this.updateAnimationState()
-    this.handleMovement(moveDirection, rotateDirection, moveSpeed)
+    this.handleMovement(
+      moveDirection,
+      rotateDirection,
+      moveSpeed,
+      currentRotateSpeed
+    )
   }
 
-  handleMovement(moveDirection, rotateDirection, moveSpeed) {
+  handleMovement(moveDirection, rotateDirection, moveSpeed, rotateSpeed) {
     const forwardVector = new THREE.Vector3(0, 0, 1)
     forwardVector.multiplyScalar(moveSpeed)
     forwardVector.applyQuaternion(this.modelRoot.quaternion)
 
-    if (moveDirection === 'Idle' && rotateDirection === 'Idle') {
-      this.updateSpeedometer(0, 0)
-    } else {
-      this.updateSpeedometer(this.currentMoveSpeed, this.currentRotateSpeed)
-    }
+    let rotateMeter = 0
+    let speedMeter = 0
 
+    if (moveDirection === 'Idle') {
+      this.updateSpeedometer(speedMeter)
+      this.updateRotateMeter(rotateMeter)
+    }
     if (moveDirection === 'Run') {
+      this.updateSpeedometer(speedMeter + moveSpeed)
       this.modelRoot.position.add(forwardVector) // Move forward
     }
     if (moveDirection === 'Reverse') {
+      this.updateSpeedometer(speedMeter + moveSpeed)
       this.modelRoot.position.sub(forwardVector.negate())
     }
     if (rotateDirection === 'RotateLeft') {
+      this.updateRotateMeter(rotateMeter + rotateSpeed)
       this.modelRoot.rotation.y += this.currentRotateSpeed
     }
     if (rotateDirection === 'RotateRight') {
+      this.updateRotateMeter(rotateMeter + rotateSpeed)
       this.modelRoot.rotation.y -= this.currentRotateSpeed
     }
   }
-
-  updateSpeedometer(moveSpeed, rotateSpeed) {
-    const moveElem = document.getElementById('moveSpeedometer')
+  updateRotateMeter(rotateMeter) {
     const rotateElem = document.getElementById('rotateSpeedometer')
-
-    moveElem.textContent = `Move Speed: ${moveSpeed.toFixed(3)}`
-    rotateElem.textContent = `Rotate Speed: ${rotateSpeed.toFixed(3)}`
+    rotateElem.textContent = `Rotate Speed: ${rotateMeter.toFixed(3)}`
+  }
+  updateSpeedometer(speedMeter) {
+    const moveElem = document.getElementById('moveSpeedometer')
+    moveElem.textContent = `Move Speed: ${speedMeter.toFixed(3)}`
   }
   setupKeyboardListeners() {
     document.addEventListener('keydown', (event) => {

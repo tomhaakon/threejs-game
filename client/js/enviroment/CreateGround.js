@@ -1,6 +1,6 @@
 // CreateGround.js
 import * as THREE from 'three'
-import { Wall } from './Walls'
+import { Wall } from './walls'
 
 export class CreateGround {
   constructor(scene, textureFile, onReady) {

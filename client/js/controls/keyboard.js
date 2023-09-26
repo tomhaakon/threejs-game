@@ -1,7 +1,7 @@
 // Keyboard.js
 import * as THREE from 'three'
 import * as kd from 'keydrown'
-import { MoveModel } from '../model/ModelMovement'
+import { MoveModel } from '../model/modelMovement'
 import { EventEmitter } from './EventEmitter'
 
 export class keyboard {
@@ -34,11 +34,18 @@ export class keyboard {
     this.modelMover.setupListeners(this.eventEmitter)
 
     kd.W.down(() => {
+      this.nothingPressed = true
+      this.keys.W = true
+
       const touchStates = {
         leveledX: 0,
         leveledY: 10,
       }
       this.eventEmitter.emit('move', 'Run', touchStates, 'keyboard')
+
+      if (this.keys.A) {
+        this.eventEmitter.emit('move', 'RotateLeft', touchStates, 'keyboard')
+      }
     })
     kd.W.up(() => {
       this.runOnly = false
@@ -48,9 +55,14 @@ export class keyboard {
       this.checkIdle()
     })
     kd.A.down(() => {
+      this.nothingPressed = false
+      this.keys.A = true
       const touchStates = {
         leveledX: -10,
         leveledY: 0,
+      }
+      if (this.keys.W) {
+        this.eventEmitter.emit('move', 'Run', touchStates, 'keyboard')
       }
       this.eventEmitter.emit('move', 'RotateLeft', touchStates, 'keyboard')
     })

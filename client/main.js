@@ -4,17 +4,17 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as detectIt from 'detect-it'
 import * as kd from 'keydrown'
 
-import { LightManager } from './js/enviroment/Light' // fil for hjelp til å se hvor lyset kommer fra
-import { TouchControls } from './js/controls/TouchControls' // touch
-import { keyboard } from './js/controls/Keyboard' // keyboard
+import { LightManager } from './js/enviroment/light' // fil for hjelp til å se hvor lyset kommer fra
+import { TouchControls } from './js/controls/touchControls' // touch
+import { keyboard } from './js/controls/keyboard' // keyboard
 import { CreateGround } from './js/enviroment/createGround' // gulv med textur
-import { CameraManager } from './js/camera/CameraManager' // camera
+import { CameraManager } from './js/camera/cameraManager' // camera
 import { ModelManager } from './js/model/modelManager' // model justering
 import { AnimationManager } from './js/animation/animationManager' // animasjoner
-import { CollisionManager } from './js/CollisionManager' // kollisjon til vegg
+import { CollisionManager } from './js/collisionManager' // kollisjon til vegg
 
 import { NotifyScreen } from './js/notifyScreen.js' // fil for kun for hjelp til debug
-import { SendStatus } from './js/HandleStatus.js' // fil for debug hjelp
+import { SendStatus } from './js/handleStatus.js' // fil for debug hjelp
 
 NotifyScreen('device', detectIt.deviceType)
 
