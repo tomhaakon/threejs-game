@@ -7,13 +7,13 @@ import * as kd from 'keydrown'
 import { LightManager } from './js/enviroment/Light' // fil for hjelp til å se hvor lyset kommer fra
 import { TouchControls } from './js/controls/TouchControls' // touch
 import { keyboard } from './js/controls/Keyboard' // keyboard
-import { CreateGround } from './js/enviroment/CreateGround' // gulv med textur
+import { CreateGround } from './js/enviroment/createGround' // gulv med textur
 import { CameraManager } from './js/camera/CameraManager' // camera
-import { ModelManager } from './js/model/ModelManager' // model justering
-import { AnimationManager } from './js/animation/AnimationManager' // animasjoner
+import { ModelManager } from './js/model/modelManager' // model justering
+import { AnimationManager } from './js/animation/animationManager' // animasjoner
 import { CollisionManager } from './js/CollisionManager' // kollisjon til vegg
 
-import { NotifyScreen } from './js/NotifyScreen.js' // fil for kun for hjelp til debug
+import { NotifyScreen } from './js/notifyScreen.js' // fil for kun for hjelp til debug
 import { SendStatus } from './js/HandleStatus.js' // fil for debug hjelp
 
 NotifyScreen('device', detectIt.deviceType)

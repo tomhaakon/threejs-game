@@ -1,8 +1,8 @@
 // TouchControls.js
 import * as THREE from 'three'
 import JoystickController from 'joystick-controller'
-import { MoveModel } from '../model/ModelMovement'
-import { EventEmitter } from './EventEmitter'
+import { MoveModel } from '../model/modelMovement'
+import { EventEmitter } from './eventEmitter'
 export class TouchControls {
   constructor(modelRoot, mixerInfos) {
     this.mixerInfos = mixerInfos
