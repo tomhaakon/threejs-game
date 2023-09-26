@@ -122,6 +122,10 @@ export class MoveModel {
     forwardVector.applyQuaternion(this.modelRoot.quaternion)
 
     if (moveDirection === 'Idle' && rotateDirection === 'Idle') {
+      this.updateSpeedometer(0, 0) // Explicitly set speed to 0
+    }
+
+    if (moveDirection === 'Idle' && rotateDirection === 'Idle') {
       this.currentMoveSpeed = 0
       this.currentRotateSpeed = 0
     }
