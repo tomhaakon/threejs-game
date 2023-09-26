@@ -23,10 +23,10 @@ export class TouchControls {
       zoneRight: false,
       zoneLeft: false,
     }
-    this.initJoystick()
-    this.animate()
     this.modelMover.setMixerInfos(this.mixerInfos)
     this.modelMover.setupListeners(this.eventEmitter)
+    this.initJoystick()
+    this.animate()
     this.checkIdle()
   }
 
@@ -82,47 +82,45 @@ export class TouchControls {
     this.touchStates.zoneLeft = leveledX < 0
     this.touchStates.zoneRight = leveledX > 0
   }
+
   moveModel() {
-    //    console.log(this.mixerInfos)
+    let moveCommand = null
+    let rotateCommand = null
+    const deadZone = 3 // Adjust this value based on how wide you want the dead zone to be.
 
-    // gass
-    if (this.touchStates.zoneTop && this.touchStates.leveledY >= 9) {
-      /// this.modelMover.move('Run', this.touchStates)
-      this.eventEmitter.emit('move', 'Run')
-      this.isIdling = false
-      this.setIdle = false
-      this.isMoving = true
+    if (this.touchStates.leveledY > 0) {
+      moveCommand = 'Run'
+    } else if (this.touchStates.leveledY < -7) {
+      moveCommand = 'Reverse'
+    }
 
-      // reverse
-    } else if (this.touchStates.zoneBottom && this.touchStates.leveledY <= -7) {
-      //this.modelMover.move('Reverse', this.touchStates)
-      this.eventEmitter.emit('move', 'Reverse')
-      this.isIdling = false
-      this.setIdle = false
-      this.isMoving = true
-      // left
-    } else if (
+    // Handling Rotation
+    if (
       this.touchStates.zoneLeft &&
-      (this.touchStates.leveledY < 9 || this.touchStates.leveledY > -7)
+      Math.abs(this.touchStates.leveledX) > deadZone
     ) {
-      this.eventEmitter.emit('move', 'RotateLeft')
-      this.isIdling = false
-      this.setIdle = false
-      this.isMoving = true
-      this.isRotating = true
-      // right
+      rotateCommand = 'RotateLeft'
     } else if (
       this.touchStates.zoneRight &&
-      (this.touchStates.leveledY < 9 || this.touchStates.leveledY > -7)
+      Math.abs(this.touchStates.leveledX) > deadZone
     ) {
-      this.eventEmitter.emit('move', 'RotateRight')
+      rotateCommand = 'RotateRight'
+    }
+
+    if (moveCommand) {
+      this.eventEmitter.emit('move', moveCommand, this.touchStates)
+    }
+
+    if (rotateCommand) {
+      this.eventEmitter.emit('move', rotateCommand, this.touchStates)
+    }
+
+    if (moveCommand || rotateCommand) {
       this.isIdling = false
       this.setIdle = false
       this.isMoving = true
-      this.isRotating = true
     } else {
       this.isMoving = false
-      // this.isIdling = true
       if (!this.isIdling) this.checkIdle()
     }
   }

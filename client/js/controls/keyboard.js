@@ -34,19 +34,11 @@ export class keyboard {
     this.modelMover.setupListeners(this.eventEmitter)
 
     kd.W.down(() => {
-      this.eventEmitter.emit('move', 'Run')
-      // this.runOnly = true
-      // this.nothingPressed = false
-      // this.keys.W = true
-      // this.doublePress = this.keys.W && (this.keys.A || this.keys.D)
-
-      // if (this.keys.W && (!this.keys.A || !this.keys.D)) {
-      //   this.runOnly = true
-      // } else {
-      //   this.runOnly = false
-      // }
-
-      //this.modelMover.move('Run', 10, this.doublePress, this.runOnly)
+      const touchStates = {
+        leveledX: 0,
+        leveledY: 10,
+      }
+      this.eventEmitter.emit('move', 'Run', touchStates, 'keyboard')
     })
     kd.W.up(() => {
       this.runOnly = false
@@ -56,11 +48,11 @@ export class keyboard {
       this.checkIdle()
     })
     kd.A.down(() => {
-      this.eventEmitter.emit('move', 'RotateLeft')
-      // this.runOnly = this.keys.W && (!this.keys.A || !this.keys.D)
-      // this.nothingPressed = false
-      // this.keys.A = true
-      // this.modelMover.move('RotateLeft')
+      const touchStates = {
+        leveledX: -10,
+        leveledY: 0,
+      }
+      this.eventEmitter.emit('move', 'RotateLeft', touchStates, 'keyboard')
     })
     kd.A.up(() => {
       this.keys.A = false
@@ -72,8 +64,12 @@ export class keyboard {
     kd.D.down(() => {
       this.nothingPressed = false
       this.keys.D = true
-      //  this.modelMover.move('RotateRight')
-      this.eventEmitter.emit('move', 'RotateRight')
+
+      const touchStates = {
+        leveledX: 10,
+        leveledY: 0,
+      }
+      this.eventEmitter.emit('move', 'RotateRight', touchStates, 'keyboard')
     })
     kd.D.up(() => {
       if (!this.keys.A && !this.keys.S && !this.keys.W) {
@@ -83,18 +79,11 @@ export class keyboard {
       this.checkIdle()
     })
     kd.S.down(() => {
-      // this.runOnly = true
-      // this.nothingPressed = false
-      // this.keys.S = true
-      // this.doublePress = this.keys.S && (this.keys.A || this.keys.D)
-
-      // if (this.keys.S && (!this.keys.A || !this.keys.D)) {
-      //   this.runOnly = true
-      // } else {
-      //   this.runOnly = false
-      // }
-      this.eventEmitter.emit('move', 'Reverse')
-      // this.modelMover.move('Reverse', 10, this.doublePress, this.runOnly)
+      const touchStates = {
+        leveledX: 0,
+        leveledY: -10,
+      }
+      this.eventEmitter.emit('move', 'Reverse', touchStates, 'keyboard')
     })
     kd.S.up(() => {
       this.runOnly = false
