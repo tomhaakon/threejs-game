@@ -86,19 +86,16 @@ export class MoveModel {
         break
       case 'Run':
         this.newAnimationState = 'Run'
-        //   this.modelRoot.position.add(forwardVector)
         break
       case 'Reverse':
         this.newAnimationState = 'Reverse'
-        //   this.modelRoot.position.sub(forwardVector)
+
         break
       case 'RotateLeft':
         this.newAnimationState = 'Rotate'
-        //     this.modelRoot.rotation.y += this.rotateSpeed
         break
       case 'RotateRight':
         this.newAnimationState = 'Rotate'
-        //  this.modelRoot.rotation.y -= this.rotateSpeed
         break
       case 'RunTurnLeft':
         this.newAnimationState = 'Rotate'
@@ -111,30 +108,25 @@ export class MoveModel {
         console.warn(`Unknown direction: ${direction}`)
     }
     this.updateAnimationState()
-    this.updateSpeedometer(this.currentMoveSpeed, currentRotateSpeed)
     this.handleMovement(moveDirection, rotateDirection, moveSpeed)
   }
 
-  handleAnimation(direction) {}
   handleMovement(moveDirection, rotateDirection, moveSpeed) {
     const forwardVector = new THREE.Vector3(0, 0, 1)
     forwardVector.multiplyScalar(moveSpeed)
     forwardVector.applyQuaternion(this.modelRoot.quaternion)
 
     if (moveDirection === 'Idle' && rotateDirection === 'Idle') {
-      this.updateSpeedometer(0, 0) // Explicitly set speed to 0
+      this.updateSpeedometer(0, 0)
+    } else {
+      this.updateSpeedometer(this.currentMoveSpeed, this.currentRotateSpeed)
     }
 
-    // if (moveDirection === 'Idle' && rotateDirection === 'Idle') {
-    //   this.currentMoveSpeed = 0
-    //   this.currentRotateSpeed = 0
-    // }
     if (moveDirection === 'Run') {
       this.modelRoot.position.add(forwardVector) // Move forward
     }
     if (moveDirection === 'Reverse') {
       this.modelRoot.position.sub(forwardVector.negate())
-      //console.log(moveDirection)
     }
     if (rotateDirection === 'RotateLeft') {
       this.modelRoot.rotation.y += this.currentRotateSpeed
@@ -157,7 +149,6 @@ export class MoveModel {
         this.activeKeys.add(event.key)
       }
     })
-
     document.addEventListener('keyup', (event) => {
       this.activeKeys.delete(event.key)
     })

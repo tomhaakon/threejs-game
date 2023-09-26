@@ -1,8 +1,8 @@
 // Keyboard.js
 import * as THREE from 'three'
 import * as kd from 'keydrown'
-import { MoveModel } from '../model/modelMovement'
-import { EventEmitter } from './eventEmitter'
+import { MoveModel } from '../model/ModelMovement'
+import { EventEmitter } from './EventEmitter'
 
 export class keyboard {
   constructor(modelRoot, mixerInfos) {
