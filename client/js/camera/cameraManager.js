@@ -1,4 +1,4 @@
-//CameraManager.js
+//cameraManager.js
 import * as THREE from 'three'
 
 export class cameraManager {

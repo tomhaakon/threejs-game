@@ -1,1 +1,1 @@
-// Settings.js
+// settings.js

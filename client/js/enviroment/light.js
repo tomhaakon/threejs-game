@@ -1,4 +1,4 @@
-// Light.js
+// light.js
 
 import * as THREE from 'three'
 import { useLightHelper } from './lightHelper'

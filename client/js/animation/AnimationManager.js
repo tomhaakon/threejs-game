@@ -1,4 +1,4 @@
-// AnimationManager.js
+// animationManager.js
 
 import * as THREE from 'three'
 

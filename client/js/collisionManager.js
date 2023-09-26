@@ -1,4 +1,4 @@
-// CollisionManager.js
+// collisionManager.js
 import * as THREE from 'three'
 export class collisionManager {
   constructor(modelRoot, wallMesh, radius) {

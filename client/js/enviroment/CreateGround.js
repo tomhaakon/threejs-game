@@ -1,4 +1,4 @@
-// CreateGround.js
+// createGround.js
 import * as THREE from 'three'
 import { wall } from './walls'
 

@@ -1,4 +1,4 @@
-// TouchControls.js
+// touchControls.js
 import * as THREE from 'three'
 import JoystickController from 'joystick-controller'
 import { moveModel } from '../model/modelMovement'
