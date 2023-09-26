@@ -1,4 +1,4 @@
-// Keyboard.js
+// keyboard.js
 import * as THREE from 'three'
 import * as kd from 'keydrown'
 import { moveModel } from '../model/modelMovement'

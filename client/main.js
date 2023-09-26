@@ -1,4 +1,4 @@
-// Main.js
+// main.js
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as detectIt from 'detect-it'

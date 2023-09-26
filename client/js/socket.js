@@ -1,4 +1,4 @@
-// Socket.io
+// socket.io
 import { io } from 'socket.io-client'
 import { notifyScreen } from './notifyScreen'
 

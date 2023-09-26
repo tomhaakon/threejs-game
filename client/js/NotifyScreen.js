@@ -1,4 +1,4 @@
-// NotifyScreen.js
+// notifyScreen.js
 
 export const notifyStore = new Map()
 

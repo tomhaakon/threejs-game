@@ -1,4 +1,4 @@
-// Walls.js
+// walls.js
 import * as THREE from 'three'
 
 export class wall {

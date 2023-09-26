@@ -1,4 +1,4 @@
-//MoveModel.js
+//moveModel.js
 import * as THREE from 'three'
 import { handleAnimation } from '../animation/handleAnimation'
 

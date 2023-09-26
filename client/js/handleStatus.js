@@ -1,4 +1,4 @@
-// HandleStatus.js
+// handleStatus.js
 
 const statusStore = []
 
