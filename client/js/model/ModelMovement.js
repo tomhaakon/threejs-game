@@ -28,48 +28,41 @@ export class MoveModel {
     this.animate.setAnimation(this.animationState)
     ///  console.warn(this.newAnimationState)
   }
-  move(direction, touchThrottle, doublePress, runOnly) {
+  move(direction) {
     if (!this.modelRoot || !this.animate) return
 
     const forwardVector = new THREE.Vector3(0, 0, 1)
     forwardVector.multiplyScalar(this.baseMoveSpeed)
     forwardVector.applyQuaternion(this.modelRoot.quaternion)
-    // Idle
-    if (direction === 'Idle') {
-     // console.warn('Idle')
-      this.newAnimationState = 'Idle'
-      this.updateAnimationState()
-      // Run
-    } else if (direction === 'Run') {
-      if (!doublePress) {
+
+    switch (direction) {
+      case 'Idle':
+        this.newAnimationState = 'Idle'
+        break
+      case 'Run':
         this.newAnimationState = 'Run'
-      } else {
-        this.newAnimationState = 'Rotate'
-      }
-      this.modelRoot.position.add(forwardVector)
-      // Reverse
-    } else if (direction === 'Reverse') {
-      if (!doublePress) {
+        this.modelRoot.position.add(forwardVector)
+        break
+      case 'Reverse':
         this.newAnimationState = 'Reverse'
-      } else this.newAnimationState = 'Rotate'
-      this.modelRoot.position.sub(forwardVector)
-      // Rotate left
-    } else if (direction === 'RotateLeft') {
-      this.modelRoot.rotation.y += this.rotateSpeed
-      if (runOnly) {
-        this.newAnimationState = 'Run'
-      } else {
+        this.modelRoot.position.sub(forwardVector)
+        break
+      case 'RotateLeft':
         this.newAnimationState = 'Rotate'
-      }
-      // Rotate right
-    } else if (direction === 'RotateRight') {
-      this.modelRoot.rotation.y -= this.rotateSpeed
-      if (runOnly) {
-        this.newAnimationState = 'Run'
-      } else {
+        this.modelRoot.rotation.y += this.rotateSpeed
+        break
+      case 'RotateRight':
         this.newAnimationState = 'Rotate'
-      }
+        this.modelRoot.rotation.y -= this.rotateSpeed
+        break
+      default:
+        console.warn(`Unknown direction: ${direction}`)
     }
     this.updateAnimationState()
+  }
+  setupListeners(eventEmitter) {
+    eventEmitter.on('move', (direction) => {
+      this.move(direction)
+    })
   }
 }

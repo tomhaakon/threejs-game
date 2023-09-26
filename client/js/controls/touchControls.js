@@ -2,13 +2,13 @@
 import * as THREE from 'three'
 import JoystickController from 'joystick-controller'
 import { MoveModel } from '../model/ModelMovement'
-
+import { EventEmitter } from './EventEmitter'
 export class TouchControls {
   constructor(modelRoot, mixerInfos) {
     this.mixerInfos = mixerInfos
     this.modelMover = new MoveModel(modelRoot)
+    this.eventEmitter = new EventEmitter()
     this.direction = ''
-
     this.isRotating = false
     this.isMoving = false
     this.isIdling = true
@@ -25,8 +25,9 @@ export class TouchControls {
     }
     this.initJoystick()
     this.animate()
-    this.checkIdle()
     this.modelMover.setMixerInfos(this.mixerInfos)
+    this.modelMover.setupListeners(this.eventEmitter)
+    this.checkIdle()
   }
 
   initJoystick() {
@@ -62,6 +63,16 @@ export class TouchControls {
 
     // console.log(this.isMoving)
   }
+
+  checkIdle() {
+    if (!this.setIdle && !this.isMoving) {
+      this.setIdle = true
+      this.isIdling = true
+      this.modelMover.move('Idle', this.touchStates)
+    } else {
+      // this.setIdle = false
+    }
+  }
   touchZones(data) {
     const { leveledX, leveledY } = data
     this.touchStates.leveledX = leveledX
@@ -71,28 +82,21 @@ export class TouchControls {
     this.touchStates.zoneLeft = leveledX < 0
     this.touchStates.zoneRight = leveledX > 0
   }
-  checkIdle() {
-    if (!this.setIdle && !this.isMoving) {
-      this.modelMover.move('Idle', this.touchStates)
-      this.setIdle = true
-      this.isIdling = true
-    } else {
-      // this.setIdle = false
-    }
-  }
   moveModel() {
     //    console.log(this.mixerInfos)
 
     // gass
     if (this.touchStates.zoneTop && this.touchStates.leveledY >= 9) {
-      this.modelMover.move('Run', this.touchStates)
+      /// this.modelMover.move('Run', this.touchStates)
+      this.eventEmitter.emit('move', 'Run')
       this.isIdling = false
       this.setIdle = false
       this.isMoving = true
 
       // reverse
     } else if (this.touchStates.zoneBottom && this.touchStates.leveledY <= -7) {
-      this.modelMover.move('Reverse', this.touchStates)
+      //this.modelMover.move('Reverse', this.touchStates)
+      this.eventEmitter.emit('move', 'Reverse')
       this.isIdling = false
       this.setIdle = false
       this.isMoving = true
@@ -101,7 +105,7 @@ export class TouchControls {
       this.touchStates.zoneLeft &&
       (this.touchStates.leveledY < 9 || this.touchStates.leveledY > -7)
     ) {
-      this.modelMover.move('RotateLeft', this.touchStates)
+      this.eventEmitter.emit('move', 'RotateLeft')
       this.isIdling = false
       this.setIdle = false
       this.isMoving = true
@@ -111,16 +115,15 @@ export class TouchControls {
       this.touchStates.zoneRight &&
       (this.touchStates.leveledY < 9 || this.touchStates.leveledY > -7)
     ) {
-      this.modelMover.move('RotateRight', this.touchStates)
+      this.eventEmitter.emit('move', 'RotateRight')
       this.isIdling = false
       this.setIdle = false
       this.isMoving = true
       this.isRotating = true
     } else {
       this.isMoving = false
-      this.isIdling = true
-
-      this.checkIdle()
+      // this.isIdling = true
+      if (!this.isIdling) this.checkIdle()
     }
   }
 }

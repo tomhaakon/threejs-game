@@ -2,10 +2,12 @@
 import * as THREE from 'three'
 import * as kd from 'keydrown'
 import { MoveModel } from '../model/ModelMovement'
+import { EventEmitter } from './EventEmitter'
 
 export class keyboard {
   constructor(modelRoot, mixerInfos) {
     this.modelMover = new MoveModel(modelRoot)
+    this.eventEmitter = new EventEmitter()
     this.modelRoot = modelRoot
     this.mixerInfos = mixerInfos
     this.nothingPressed = true
@@ -29,19 +31,22 @@ export class keyboard {
   controls() {
     //set animation
     this.modelMover.setMixerInfos(this.mixerInfos)
+    this.modelMover.setupListeners(this.eventEmitter)
+
     kd.W.down(() => {
-      this.runOnly = true
-      this.nothingPressed = false
-      this.keys.W = true
-      this.doublePress = this.keys.W && (this.keys.A || this.keys.D)
+      this.eventEmitter.emit('move', 'Run')
+      // this.runOnly = true
+      // this.nothingPressed = false
+      // this.keys.W = true
+      // this.doublePress = this.keys.W && (this.keys.A || this.keys.D)
 
-      if (this.keys.W && (!this.keys.A || !this.keys.D)) {
-        this.runOnly = true
-      } else {
-        this.runOnly = false
-      }
+      // if (this.keys.W && (!this.keys.A || !this.keys.D)) {
+      //   this.runOnly = true
+      // } else {
+      //   this.runOnly = false
+      // }
 
-      this.modelMover.move('Run', 10, this.doublePress, this.runOnly)
+      //this.modelMover.move('Run', 10, this.doublePress, this.runOnly)
     })
     kd.W.up(() => {
       this.runOnly = false
@@ -51,10 +56,11 @@ export class keyboard {
       this.checkIdle()
     })
     kd.A.down(() => {
-      this.runOnly = this.keys.W && (!this.keys.A || !this.keys.D)
-      this.nothingPressed = false
-      this.keys.A = true
-      this.modelMover.move('RotateLeft')
+      this.eventEmitter.emit('move', 'RotateLeft')
+      // this.runOnly = this.keys.W && (!this.keys.A || !this.keys.D)
+      // this.nothingPressed = false
+      // this.keys.A = true
+      // this.modelMover.move('RotateLeft')
     })
     kd.A.up(() => {
       this.keys.A = false
@@ -66,7 +72,8 @@ export class keyboard {
     kd.D.down(() => {
       this.nothingPressed = false
       this.keys.D = true
-      this.modelMover.move('RotateRight')
+      //  this.modelMover.move('RotateRight')
+      this.eventEmitter.emit('move', 'RotateRight')
     })
     kd.D.up(() => {
       if (!this.keys.A && !this.keys.S && !this.keys.W) {
@@ -76,17 +83,18 @@ export class keyboard {
       this.checkIdle()
     })
     kd.S.down(() => {
-      this.runOnly = true
-      this.nothingPressed = false
-      this.keys.S = true
-      this.doublePress = this.keys.S && (this.keys.A || this.keys.D)
+      // this.runOnly = true
+      // this.nothingPressed = false
+      // this.keys.S = true
+      // this.doublePress = this.keys.S && (this.keys.A || this.keys.D)
 
-      if (this.keys.S && (!this.keys.A || !this.keys.D)) {
-        this.runOnly = true
-      } else {
-        this.runOnly = false
-      }
-      this.modelMover.move('Reverse', 10, this.doublePress, this.runOnly)
+      // if (this.keys.S && (!this.keys.A || !this.keys.D)) {
+      //   this.runOnly = true
+      // } else {
+      //   this.runOnly = false
+      // }
+      this.eventEmitter.emit('move', 'Reverse')
+      // this.modelMover.move('Reverse', 10, this.doublePress, this.runOnly)
     })
     kd.S.up(() => {
       this.runOnly = false

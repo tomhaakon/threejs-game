@@ -138,18 +138,7 @@ class ThreeJsGame {
       this.animationManager.getMixers(),
       this.scene
     )
-    if (detectIt.deviceType === 'mouseOnly') {
-      const setKeyboard = new keyboard(
-        this.modelRoot,
-        this.animationManager.getMixerInfos()
-      )
-      setKeyboard.controls()
-    } else {
-      const controls = new TouchControls(
-        this.modelRoot,
-        this.animationManager.getMixerInfos()
-      )
-    }
+
     if (this.groundInstance) {
       console.log('Ground instance is available')
       this.wallInstance = this.groundInstance.getWallInstance()
@@ -162,6 +151,18 @@ class ThreeJsGame {
     console.log('init')
   }
   main() {
+    if (detectIt.deviceType === 'mouseOnly') {
+      const setKeyboard = new keyboard(
+        this.modelRoot,
+        this.animationManager.getMixerInfos()
+      )
+      setKeyboard.controls()
+    } else {
+      const controls = new TouchControls(
+        this.modelRoot,
+        this.animationManager.getMixerInfos()
+      )
+    }
     requestAnimationFrame(this.render.bind(this))
     console.log('main method triggerd')
 
