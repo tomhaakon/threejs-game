@@ -125,10 +125,10 @@ export class MoveModel {
       this.updateSpeedometer(0, 0) // Explicitly set speed to 0
     }
 
-    if (moveDirection === 'Idle' && rotateDirection === 'Idle') {
-      this.currentMoveSpeed = 0
-      this.currentRotateSpeed = 0
-    }
+    // if (moveDirection === 'Idle' && rotateDirection === 'Idle') {
+    //   this.currentMoveSpeed = 0
+    //   this.currentRotateSpeed = 0
+    // }
     if (moveDirection === 'Run') {
       this.modelRoot.position.add(forwardVector) // Move forward
     }
