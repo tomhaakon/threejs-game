@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js'
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js'
 
-export function UseLightHelper(light) {
+export function useLightHelper(light) {
   //
   class ColorGUIHelper {
     //

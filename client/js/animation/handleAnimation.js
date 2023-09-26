@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-export class HandleAnimation {
+export class handleAnimation {
   constructor(mixerInfos) {
     this.mixerInfos = mixerInfos
     this.activeAction = null // Keep track of the active action

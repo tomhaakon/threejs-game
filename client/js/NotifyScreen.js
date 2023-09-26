@@ -2,7 +2,7 @@
 
 export const notifyStore = new Map()
 
-export const NotifyScreen = (name, msg) => {
+export const notifyScreen = (name, msg) => {
   const notifyBox = document.getElementById('notifyBox')
   notifyStore.set(name, msg)
 

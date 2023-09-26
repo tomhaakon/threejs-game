@@ -2,7 +2,7 @@
 
 const statusStore = []
 
-export const SendStatus = (condition = false) => {
+export const sendStatus = (condition = false) => {
   const statusBox = document.getElementById('statusBox')
 
   if (condition === true) {

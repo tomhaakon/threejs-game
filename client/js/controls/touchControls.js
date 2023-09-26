@@ -1,13 +1,13 @@
 // TouchControls.js
 import * as THREE from 'three'
 import JoystickController from 'joystick-controller'
-import { MoveModel } from '../model/modelMovement'
-import { EventEmitter } from './EventEmitter'
-export class TouchControls {
+import { moveModel } from '../model/modelMovement'
+import { eventEmitter } from './eventEmitter'
+export class touchControls {
   constructor(modelRoot, mixerInfos) {
     this.mixerInfos = mixerInfos
-    this.modelMover = new MoveModel(modelRoot)
-    this.eventEmitter = new EventEmitter()
+    this.modelMover = new moveModel(modelRoot)
+    this.eventEmitter = new eventEmitter()
     this.direction = ''
     this.isRotating = false
     this.isMoving = false

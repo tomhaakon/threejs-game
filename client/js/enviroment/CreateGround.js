@@ -1,8 +1,8 @@
 // CreateGround.js
 import * as THREE from 'three'
-import { Wall } from './walls'
+import { wall } from './walls'
 
-export class CreateGround {
+export class createGround {
   constructor(scene, textureFile, onReady) {
     this.scene = scene
     this.textureFile = textureFile
@@ -10,7 +10,7 @@ export class CreateGround {
     this.segments = 64
 
     this.groundMesh = null
-    this.wall = new Wall(this.scene, this.radius, this.segments)
+    this.wall = new wall(this.scene, this.radius, this.segments)
 
     this.onReady = onReady
     this.initGround()

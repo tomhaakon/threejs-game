@@ -1,13 +1,13 @@
 // Keyboard.js
 import * as THREE from 'three'
 import * as kd from 'keydrown'
-import { MoveModel } from '../model/modelMovement'
-import { EventEmitter } from './EventEmitter'
+import { moveModel } from '../model/modelMovement'
+import { eventEmitter } from './eventEmitter'
 
 export class keyboard {
   constructor(modelRoot, mixerInfos) {
-    this.modelMover = new MoveModel(modelRoot)
-    this.eventEmitter = new EventEmitter()
+    this.modelMover = new moveModel(modelRoot)
+    this.eventEmitter = new eventEmitter()
     this.modelRoot = modelRoot
     this.mixerInfos = mixerInfos
     this.nothingPressed = true

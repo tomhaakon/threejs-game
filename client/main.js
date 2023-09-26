@@ -4,19 +4,19 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as detectIt from 'detect-it'
 import * as kd from 'keydrown'
 
-import { LightManager } from './js/enviroment/light' // fil for hjelp til å se hvor lyset kommer fra
-import { TouchControls } from './js/controls/touchControls' // touch
+import { lightManager } from './js/enviroment/light' // fil for hjelp til å se hvor lyset kommer fra
+import { touchControls } from './js/controls/touchControls' // touch
 import { keyboard } from './js/controls/keyboard' // keyboard
-import { CreateGround } from './js/enviroment/createGround' // gulv med textur
-import { CameraManager } from './js/camera/cameraManager' // camera
-import { ModelManager } from './js/model/modelManager' // model justering
-import { AnimationManager } from './js/animation/animationManager' // animasjoner
-import { CollisionManager } from './js/collisionManager' // kollisjon til vegg
+import { createGround } from './js/enviroment/createGround' // gulv med textur
+import { cameraManager } from './js/camera/cameraManager' // camera
+import { modelManager } from './js/model/modelManager' // model justering
+import { animationManager } from './js/animation/animationManager' // animasjoner
+import { collisionManager } from './js/collisionManager' // kollisjon til vegg
 
-import { NotifyScreen } from './js/notifyScreen.js' // fil for kun for hjelp til debug
-import { SendStatus } from './js/handleStatus.js' // fil for debug hjelp
+import { notifyScreen } from './js/notifyScreen.js' // fil for kun for hjelp til debug
+import { sendStatus } from './js/handleStatus.js' // fil for debug hjelp
 
-NotifyScreen('device', detectIt.deviceType)
+notifyScreen('device', detectIt.deviceType)
 
 class ThreeJsGame {
   constructor() {
@@ -31,17 +31,17 @@ class ThreeJsGame {
 
     //? model
     this.modelRoot = new THREE.Object3D()
-    this.animationManager = new AnimationManager()
-    this.modelManager = new ModelManager(this.animationManager)
+    this.animationManager = new animationManager()
+    this.modelManager = new modelManager(this.animationManager)
 
     this.scene = this.initializeScene()
     //?
-    this.collisionManager = new CollisionManager()
+    this.collisionManager = new collisionManager()
     this.playerMesh = null
     this.wallInstance = null
 
     //? camera
-    this.cameraManager = new CameraManager(
+    this.cameraManager = new cameraManager(
       this.modelRoot,
       this.scene,
       this.aspect
@@ -52,7 +52,7 @@ class ThreeJsGame {
     this.groundInstance = null
 
     //? light
-    this.lightManager = new LightManager(this.scene)
+    this.lightManager = new lightManager(this.scene)
     this.then = 0
   }
 
@@ -123,7 +123,7 @@ class ThreeJsGame {
     const groundTexture =
       'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg'
 
-    this.groundInstance = new CreateGround(this.scene, groundTexture)
+    this.groundInstance = new createGround(this.scene, groundTexture)
     console.log('ground init')
   }
 
@@ -158,7 +158,7 @@ class ThreeJsGame {
       )
       setKeyboard.controls()
     } else {
-      const controls = new TouchControls(
+      const controls = new touchControls(
         this.modelRoot,
         this.animationManager.getMixerInfos()
       )
@@ -166,7 +166,7 @@ class ThreeJsGame {
     requestAnimationFrame(this.render.bind(this))
     console.log('main method triggerd')
 
-    SendStatus(true) // et lite ikon opp til venstre som viser at main() kjører (debug)
+    sendStatus(true) // et lite ikon opp til venstre som viser at main() kjører (debug)
   }
 
   resizeRendererToDisplaySize(renderer) {

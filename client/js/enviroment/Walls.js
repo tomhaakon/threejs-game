@@ -1,7 +1,7 @@
 // Walls.js
 import * as THREE from 'three'
 
-export class Wall {
+export class wall {
   constructor(scene, radius, segments) {
     this.radius = radius
     this.segments = segments

@@ -1,7 +1,7 @@
 //CameraManager.js
 import * as THREE from 'three'
 
-export class CameraManager {
+export class cameraManager {
   constructor(modelRoot, scene, aspect) {
     this.modelRoot = modelRoot
     this.scene = scene

@@ -1,10 +1,10 @@
 // Light.js
 
 import * as THREE from 'three'
-import { UseLightHelper } from './lightHelper'
+import { useLightHelper } from './lightHelper'
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js'
 
-export class LightManager {
+export class lightManager {
   constructor(scene) {
     this.scene = scene
     this.light = null

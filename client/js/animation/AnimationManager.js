@@ -2,7 +2,7 @@
 
 import * as THREE from 'three'
 
-export class AnimationManager {
+export class animationManager {
   constructor() {
     this.mixers = []
     this.mixerInfos = []

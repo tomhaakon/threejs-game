@@ -1,8 +1,8 @@
 //MoveModel.js
 import * as THREE from 'three'
-import { HandleAnimation } from '../animation/HandleAnimation'
+import { handleAnimation } from '../animation/handleAnimation'
 
-export class MoveModel {
+export class moveModel {
   constructor(modelRoot) {
     this.modelRoot = modelRoot
 
@@ -23,7 +23,7 @@ export class MoveModel {
   }
 
   setMixerInfos(mixerInfos) {
-    this.animate = new HandleAnimation(mixerInfos)
+    this.animate = new handleAnimation(mixerInfos)
   }
 
   updateAnimationState() {
