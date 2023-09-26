@@ -1,3 +1,4 @@
+// Walls.js
 import * as THREE from 'three'
 
 export class Wall {
@@ -32,9 +33,8 @@ export class Wall {
   getMesh() {
     return this.wallMesh
   }
-  // ... Wall class
+
   getRadius() {
     return this.radius
   }
-  // ...
 }

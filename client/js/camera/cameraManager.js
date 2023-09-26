@@ -1,3 +1,4 @@
+//CameraManager.js
 import * as THREE from 'three'
 
 export class CameraManager {
@@ -21,7 +22,6 @@ export class CameraManager {
   }
 
   updateCamera() {
-    // Calculate the new offset for the camera based on the model's forward direction
     const offset = new THREE.Vector3(
       -Math.sin(this.modelRoot.rotation.y) * this.offsetDistance,
       this.heightOffset,
@@ -30,7 +30,6 @@ export class CameraManager {
 
     this.camera.position.copy(this.modelRoot.position).add(offset)
 
-    // Adjust camera's lookAt.
     this.camera.lookAt(
       this.modelRoot.position.x,
       this.modelRoot.position.y - this.lookDownOffset,

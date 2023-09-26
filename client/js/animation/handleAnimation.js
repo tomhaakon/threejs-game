@@ -1,35 +1,43 @@
-//handleAnimation.js
 import * as THREE from 'three'
 
-export class handleAnimation {
+export class HandleAnimation {
   constructor(mixerInfos) {
-    //
     this.mixerInfos = mixerInfos
+    this.activeAction = null // Keep track of the active action
   }
+
   setAnimation(name) {
-    //
-    //  console.log('setAnimation:', name)
-    this.mixerInfos.forEach((mixerInfo) => {
-      const actions = mixerInfo.actions // renamed for clarity
+    const actions = this.mixerInfos[1].actions
 
-      //
-      // Find the action that matches the name
-      const actionToPlay = actions.find(
-        (action) => action.getClip().name === name
-      )
+    let actionToPlay = null
+    switch (name) {
+      case 'Idle':
+        actionToPlay = actions[2]
+        actionToPlay.timeScale = 2.0
+        break
+      case 'Run':
+        actionToPlay = actions[3]
+        actionToPlay.timeScale = 1.0
+        break
+      case 'Rotate':
+        actionToPlay = actions[3]
+        actionToPlay.timeScale = 2.0
+        break
+      case 'Reverse':
+        actionToPlay = actions[3]
+        actionToPlay.timeScale = -1
+        break
+    }
 
-      if (actionToPlay) {
-        actions.forEach((action) => action.stop()) // stop all actions
-        actionToPlay.play() // play the specific action
-      }
-      if (name === 'Rotate') {
-        let action = actions[3]
-        action.timeScale = 2.0
-        //   console.log(actions[3].play())
-        action.play()
-      } //else {
-      //   console.warn(`Action "${name}" not found`)
-      // }
-    })
+    if (this.activeAction && this.activeAction !== actionToPlay) {
+      // Stop the previous action before playing the new one
+      this.activeAction.stop()
+    }
+
+    // Play the selected action
+    if (actionToPlay) {
+      actionToPlay.play()
+      this.activeAction = actionToPlay // Update the active action
+    }
   }
 }

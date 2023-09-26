@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./status.css" />
     <meta charset="utf-8" />
-    <title>threejs</title>
+    <title>threejs-game</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 
   </head>
@@ -25,15 +25,19 @@
   </div>
 </div>
 <!-- user count box -->
-<div id="userCountBox">Users connected: 0</div>
 
+
+<div id="moveSpeedometer">Move Speed: 0</div>
+<div id="rotateSpeedometer">Rotate Speed: 0</div>
     <!-- status icon -->
     <div class="container " id="statusBox">
     </div>
     <!-- youstick -->
     <div id="zone_joystick"></div>
+
+
     <!-- errorbox -->
-    <div id="errorBox">    </div></div>
+    <div id="notifyBox">    </div></div>
   </body>
   <script type="module" src="./main.js"></script>
 <script type="module" src="js/socket.js"></script>

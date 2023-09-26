@@ -1,6 +1,8 @@
+// HandleStatus.js
+
 const statusStore = []
 
-export const sendStatus = (condition = false) => {
+export const SendStatus = (condition = false) => {
   const statusBox = document.getElementById('statusBox')
 
   if (condition === true) {

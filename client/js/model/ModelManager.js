@@ -24,19 +24,18 @@ export class ModelManager {
   }
   addModelsToScene(loadedModels, modelRoot, mixerInfos, mixers, scene) {
     Object.values(loadedModels).forEach((model, ndx) => {
-      //  console.warn(scene)
       this.animationManager.addMixerForModel(model)
       const objectScale = 13
       const clonedScene = SkeletonUtils.clone(model.gltf.scene)
-      // Change the material of all meshes to a white Lambert material.
+
       clonedScene.traverse((child) => {
         if (child instanceof THREE.Mesh) {
-          child.material.map = null // Remove texture map
-          child.material.color.set(0xffffff) // Set color to white
-          child.material.needsUpdate = true // Required when changing the material
+          child.material.map = null
+          child.material.color.set(0xffffff)
+          child.material.needsUpdate = true
 
-          child.castShadow = true // Object will cast shadows
-          child.receiveShadow = true // Object will receive shadows
+          child.castShadow = true
+          child.receiveShadow = true
         }
       })
 
@@ -54,7 +53,7 @@ export class ModelManager {
         return mixer.clipAction(clip)
       })
 
-      model.animations = {} // Resetting the animations for the model
+      model.animations = {}
       model.gltf.animations.forEach((clip) => {
         model.animations[clip.name] = clip
       })
@@ -65,7 +64,7 @@ export class ModelManager {
         actionNdx: -1,
       }
       mixerInfos.push(mixerInfo)
-      action.play()
+      //action.play()
       mixers.push(mixer)
     })
   }
@@ -82,10 +81,6 @@ export class ModelManager {
   }
   getPlayerMesh() {
     if (this.loadedModels['alienBug'] && this.loadedModels['alienBug'].gltf) {
-      // console.log(
-      //   'getPlayerMesh: Player mesh object:',
-      //   this.loadedModels['alienBug'].gltf.scene
-      // )
       return this.loadedModels['alienBug'].gltf.scene
     } else {
       console.error('Player model is not loaded yet.')

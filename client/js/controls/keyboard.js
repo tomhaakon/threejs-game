@@ -1,63 +1,110 @@
-// keyboard.js
+// Keyboard.js
 import * as THREE from 'three'
 import * as kd from 'keydrown'
-import { moveModel } from '../movement/moveModel'
+import { MoveModel } from '../model/ModelMovement'
+import { EventEmitter } from './EventEmitter'
 
 export class keyboard {
   constructor(modelRoot, mixerInfos) {
-    this.modelMover = new moveModel(modelRoot)
+    this.modelMover = new MoveModel(modelRoot)
+    this.eventEmitter = new EventEmitter()
     this.modelRoot = modelRoot
     this.mixerInfos = mixerInfos
-    this.isRunning = false
-  }
+    this.nothingPressed = true
+    this.doublePress = false
+    this.runOnly = true
+    this.keys = {
+      W: false,
+      A: false,
+      S: false,
+      D: false,
+    }
 
+    //console.log(this.nothingPressed)
+  }
+  checkIdle() {
+    if (this.nothingPressed) {
+      this.modelMover.move('Idle')
+      // console.warn('idle')
+    } else return
+  }
   controls() {
     //set animation
     this.modelMover.setMixerInfos(this.mixerInfos)
+    this.modelMover.setupListeners(this.eventEmitter)
 
     kd.W.down(() => {
-      this.isRunning = true
-      this.modelMover.moveModelWithKeyboard('forward', this.modelRoot) //
+      const touchStates = {
+        leveledX: 0,
+        leveledY: 10,
+      }
+      this.eventEmitter.emit('move', 'Run', touchStates, 'keyboard')
     })
     kd.W.up(() => {
-      this.isRunning = false
-      this.modelMover.moveModelWithKeyboard('idle', this.modelRoot) //
+      this.runOnly = false
+      this.keys.W = false
+      this.nothingPressed = !this.keys.A && !this.keys.S && !this.keys.D
+      this.doublePress = false
+      this.checkIdle()
     })
     kd.A.down(() => {
-      if (this.isRunning) {
-        this.modelMover.moveModelWithKeyboard('slow-left', this.modelRoot)
-      } else {
-        this.modelMover.moveModelWithKeyboard('fast-left', this.modelRoot)
+      const touchStates = {
+        leveledX: -10,
+        leveledY: 0,
       }
+      this.eventEmitter.emit('move', 'RotateLeft', touchStates, 'keyboard')
     })
     kd.A.up(() => {
-      if (!this.isRunning) {
-        this.modelMover.moveModelWithKeyboard('idle', this.modelRoot) //
+      this.keys.A = false
+      if (!this.keys.W && !this.keys.S && !this.keys.D) {
+        this.nothingPressed = true
       }
+      this.checkIdle()
     })
     kd.D.down(() => {
-      if (this.isRunning) {
-        this.modelMover.moveModelWithKeyboard('slow-right', this.modelRoot)
-      } else {
-        this.modelMover.moveModelWithKeyboard('fast-right', this.modelRoot)
+      this.nothingPressed = false
+      this.keys.D = true
+
+      const touchStates = {
+        leveledX: 10,
+        leveledY: 0,
       }
+      this.eventEmitter.emit('move', 'RotateRight', touchStates, 'keyboard')
     })
     kd.D.up(() => {
-      if (!this.isRunning) {
-        this.modelMover.moveModelWithKeyboard('idle', this.modelRoot) //
+      if (!this.keys.A && !this.keys.S && !this.keys.W) {
+        this.nothingPressed = true
+      }
+      this.keys.D = false
+      this.checkIdle()
+    })
+    kd.S.down(() => {
+      const touchStates = {
+        leveledX: 0,
+        leveledY: -10,
+      }
+      this.eventEmitter.emit('move', 'Reverse', touchStates, 'keyboard')
+    })
+    kd.S.up(() => {
+      this.runOnly = false
+      this.keys.S = false
+      this.nothingPressed = !this.keys.A && !this.keys.D && !this.keys.W
+      this.doublePress = false
+      this.checkIdle()
+    })
+
+    kd.run(() => {
+      if (
+        this.keys.W === false &&
+        this.keys.A === false &&
+        this.keys.S === false &&
+        this.keys.D === false
+      ) {
+        this.nothingPressed = true
+      } else {
+        this.nothingPressed = false
       }
     })
-    // console.log(this.isRunning)
-    // kd.A.down(() => {
-    //   this.modelMover.moveModelWithKeyboard('left', this.modelRoot)
-    // })
-    // kd.A.up(() => {
-    //   this.modelMover.moveModelWithKeyboard('idle', this.modelRoot) //
-    // })
-
-    kd.S.down(() => {})
-
-    kd.S.up(() => {})
-    kd.run(() => {})
+    this.checkIdle()
   }
 }
