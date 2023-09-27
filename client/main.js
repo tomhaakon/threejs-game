@@ -12,15 +12,14 @@ import { cameraManager } from './js/camera/cameraManager' // camera
 import { modelManager } from './js/model/modelManager' // model justering
 import { animationManager } from './js/animation/animationManager' // animasjoner
 import { collisionManager } from './js/collisionManager' // kollisjon til vegg
-
+import { miniConsole } from './js/miniConsole'
 import { notifyScreen } from './js/notifyScreen.js' // fil for kun for hjelp til debug
 import { sendStatus } from './js/handleStatus.js' // fil for debug hjelp
-
-notifyScreen('device', detectIt.deviceType)
 
 class ThreeJsGame {
   constructor() {
     //? canvas
+    this.miniConsole = new miniConsole()
     this.canvas = document.querySelector('#c')
     this.aspect = this.canvas.clientWidth / this.canvas.clientHeight
     this.renderer = this.initializeRenderer(this.canvas)
@@ -60,7 +59,7 @@ class ThreeJsGame {
     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
-    console.log('Renderer init')
+    this.updateMiniConsole('initializeRenderer')
 
     return renderer
   }
@@ -72,7 +71,7 @@ class ThreeJsGame {
     manager.onProgress = (url, itemsLoaded, itemsTotal) => {
       progressbarElem.style.width = `${((itemsLoaded / itemsTotal) * 100) | 0}%`
     }
-    console.log('LoadingManager init')
+    this.updateMiniConsole('initializeLoadingManager')
 
     return { manager, loadingElem }
   }
@@ -81,7 +80,7 @@ class ThreeJsGame {
     const scene = new THREE.Scene()
     scene.background = new THREE.Color('black')
     scene.add(this.modelRoot)
-    console.log('Scene init')
+    this.updateMiniConsole('initalizeScene ')
 
     return scene
   }
@@ -115,6 +114,7 @@ class ThreeJsGame {
       this.modelManager.loadedModels = loadedModels
       this.initGround()
       this.init()
+      this.updateMiniConsole('Preload')
     } catch (error) {
       console.error('Failed to preload resources:', error)
     }
@@ -124,7 +124,7 @@ class ThreeJsGame {
       'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/gr.jpg'
 
     this.groundInstance = new createGround(this.scene, groundTexture)
-    console.log('ground init')
+    this.updateMiniConsole('InitGround')
   }
 
   init() {
@@ -148,7 +148,7 @@ class ThreeJsGame {
 
     //this.playerMesh = this.modelManager.getPlayerMesh()
 
-    console.log('init')
+    this.updateMiniConsole('Init')
   }
   main() {
     if (detectIt.deviceType === 'mouseOnly') {
@@ -163,10 +163,18 @@ class ThreeJsGame {
         this.animationManager.getMixerInfos()
       )
     }
-    requestAnimationFrame(this.render.bind(this))
-    console.log('main method triggerd')
 
-    sendStatus(true) // et lite ikon opp til venstre som viser at main() kjører (debug)
+    requestAnimationFrame(this.render.bind(this))
+    this.updateMiniConsole('Main init')
+  }
+  updateMiniConsole(message) {
+    const miniConsole = document.getElementById('rightConsole')
+    const newMessage = document.createElement('div')
+    newMessage.textContent = message
+    miniConsole.appendChild(newMessage)
+
+    // Auto-scroll to bottom
+    miniConsole.scrollTop = miniConsole.scrollHeight
   }
 
   resizeRendererToDisplaySize(renderer) {
@@ -205,4 +213,10 @@ class ThreeJsGame {
 const game = new ThreeJsGame()
 game.preload().then(() => {
   game.main()
+  game.miniConsole.update('Game loaded')
+  game.miniConsole.update(
+    `Device: ${detectIt.deviceType}`,
+    'Left',
+    'deviceType'
+  )
 })

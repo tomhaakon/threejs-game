@@ -1,11 +1,11 @@
 //moveModel.js
 import * as THREE from 'three'
 import { handleAnimation } from '../animation/handleAnimation'
-
+import { miniConsole } from '../miniConsole'
 export class moveModel {
   constructor(modelRoot) {
     this.modelRoot = modelRoot
-
+    this.miniConsole = new miniConsole()
     this.animationState = 'Idle'
 
     this.touchStates = null
@@ -112,12 +112,6 @@ export class moveModel {
     )
   }
 
-  updateDOMElements(moveSpeed, rotateSpeed) {
-    document.getElementById(
-      'moveSpeedometer'
-    ).innerText = `Move Speed: ${moveSpeed.toFixed(2)}`
-  }
-
   handleMovement(moveDirection, rotateDirection, moveSpeed, rotateSpeed) {
     const forwardVector = new THREE.Vector3(0, 0, 1)
     forwardVector.multiplyScalar(moveSpeed)
@@ -133,8 +127,11 @@ export class moveModel {
       speedMeter = 0
     }
 
-    console.log('speedMeter:', speedMeter)
-    this.updateDOMElements(speedMeter)
+    this.miniConsole.update(
+      `Move speed:${speedMeter.toFixed(2)}`,
+      'Left',
+      'moveSpeed'
+    )
 
     if (moveDirection === 'Run') {
       this.modelRoot.position.add(forwardVector)

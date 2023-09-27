@@ -33,6 +33,7 @@ body {
 }
 #loading {
   position: absolute;
+
   left: 0;
   top: 0;
   width: 100%;
@@ -70,25 +71,46 @@ body {
   animation: progressanim 2s linear infinite;
 }
 
-#userCountBox {
-  font-size: 20px;
-  color: black;
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  opacity: 50%;
-}
-#moveSpeedometer {
+#leftConsole {
+  background-color: transparent;
+  pointer-events: none;
+  user-select: none;
+  padding: 10px;
   position: fixed;
   top: 0;
   left: 0;
+  width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  color: white;
+  padding: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  text-align: left;
+  z-index: 1000;
+  opacity: 0.9;
+  border-bottom-left-radius: 8px;
 }
-#rotateSpeedometer {
+#rightConsole {
+  background-color: transparent;
+  pointer-events: none;
+  user-select: none;
   position: fixed;
   top: 0;
-  padding-top: 13px;
-  left: 0;
+  right: 0;
+  width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  color: limegreen;
+  padding: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  text-align: right;
+  z-index: 1000;
+  opacity: 0.9;
+  border-bottom-left-radius: 8px;
 }
+
 @keyframes progressanim {
   0% {
     background-position: 50px 50px;
