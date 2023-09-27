@@ -7,6 +7,7 @@ import { eventEmitter } from './eventEmitter'
 export class keyboard {
   constructor(modelRoot, mixerInfos) {
     this.modelMover = new moveModel(modelRoot)
+
     this.eventEmitter = new eventEmitter()
     this.modelRoot = modelRoot
     this.mixerInfos = mixerInfos

@@ -7,6 +7,8 @@ export class touchControls {
   constructor(modelRoot, mixerInfos) {
     this.mixerInfos = mixerInfos
     this.modelMover = new moveModel(modelRoot)
+   
+
     this.eventEmitter = new eventEmitter()
     this.direction = ''
     this.isRotating = false
@@ -23,6 +25,10 @@ export class touchControls {
       zoneRight: false,
       zoneLeft: false,
     }
+
+    this.prevPosition = modelRoot.position.clone()
+    this.prevTimestamp = performance.now()
+
     this.modelMover.setMixerInfos(this.mixerInfos)
     this.modelMover.setupListeners(this.eventEmitter)
     this.initJoystick()
