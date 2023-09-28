@@ -1,21 +1,19 @@
 // socket.io
 import { io } from 'socket.io-client'
-import { notifyScreen } from './notifyScreen'
+const serverURL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://threejs-game.onrender.com'
+    : 'http://localhost:3000'
 
-const socket = io('https://threejs-game.onrender.com')
-let counter = 0
-
-notifyScreen('Users connected', counter)
+const socket = io('http://localhost:3000')
+//const socket = io('https://threejs-game.onrender.com')
 
 socket.on('connect', () => {
   console.log('Connected to the server')
 })
 
-socket.on('updateUserCount', (count) => {
-  counter = count
-  notifyScreen('Users connected', counter)
-})
-
 socket.on('hello', (message) => {
   console.log(message)
 })
+
+export default socket

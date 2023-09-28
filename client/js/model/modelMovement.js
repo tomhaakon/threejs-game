@@ -2,6 +2,8 @@
 import * as THREE from 'three'
 import { handleAnimation } from '../animation/handleAnimation'
 import { miniConsole } from '../miniConsole'
+import socket from '../socket'
+
 export class moveModel {
   constructor(modelRoot) {
     this.modelRoot = modelRoot
@@ -25,6 +27,8 @@ export class moveModel {
 
     this.activeKeys = new Set()
     this.setupKeyboardListeners()
+
+    // this.socket = socket
   }
 
   setMixerInfos(mixerInfos) {
@@ -132,18 +136,50 @@ export class moveModel {
       'Left',
       'moveSpeed'
     )
+    const playerData = this.modelRoot
+    const timestampSent = Date.now()
+    //  this.socket.emit('playerMovement', { playerData, timestampSent })
 
     if (moveDirection === 'Run') {
       this.modelRoot.position.add(forwardVector)
-    }
-    if (moveDirection === 'Reverse') {
+    } else if (moveDirection === 'Reverse') {
       this.modelRoot.position.sub(forwardVector.negate())
     }
+    if (moveDirection === 'Run' || moveDirection === 'Reverse') {
+      socket.emit('playerMovement', {
+        position: {
+          x: this.modelRoot.position.x,
+          y: this.modelRoot.position.y,
+          z: this.modelRoot.position.z,
+        },
+        rotation: {
+          x: this.modelRoot.rotation.x,
+          y: this.modelRoot.rotation.y,
+          z: this.modelRoot.rotation.z,
+        },
+      })
+    }
+
     if (rotateDirection === 'RotateLeft') {
       this.modelRoot.rotation.y += this.currentRotateSpeed
     }
     if (rotateDirection === 'RotateRight') {
       this.modelRoot.rotation.y -= this.currentRotateSpeed
+    }
+    // Add emission for Rotation
+    if (rotateDirection === 'RotateLeft' || rotateDirection === 'RotateRight') {
+      socket.emit('playerMovement', {
+        position: {
+          x: this.modelRoot.position.x,
+          y: this.modelRoot.position.y,
+          z: this.modelRoot.position.z,
+        },
+        rotation: {
+          x: this.modelRoot.rotation.x,
+          y: this.modelRoot.rotation.y,
+          z: this.modelRoot.rotation.z,
+        },
+      })
     }
   }
 

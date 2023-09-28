@@ -3,6 +3,8 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as detectIt from 'detect-it'
 import * as kd from 'keydrown'
+import socket from './js/socket'
+import { Player } from './js/network/player'
 
 import { lightManager } from './js/enviroment/light' // fil for hjelp til å se hvor lyset kommer fra
 import { touchControls } from './js/controls/touchControls' // touch
@@ -32,7 +34,8 @@ class ThreeJsGame {
     this.modelRoot = new THREE.Object3D()
     this.animationManager = new animationManager()
     this.modelManager = new modelManager(this.animationManager)
-
+    this.playerData = this.modelRoot
+    // console.log(this.modelRoot.position)
     this.scene = this.initializeScene()
     //?
     this.collisionManager = new collisionManager()
@@ -53,6 +56,10 @@ class ThreeJsGame {
     //? light
     this.lightManager = new lightManager(this.scene)
     this.then = 0
+
+    //this.socket = socket
+    //console.log(this.playerData)
+    this.playerManager = new PlayerManager(this.playerData)
   }
 
   initializeRenderer(canvas) {
@@ -146,7 +153,32 @@ class ThreeJsGame {
       console.error('Ground instance is not available')
     }
 
-    //this.playerMesh = this.modelManager.getPlayerMesh()
+    socket.emit('playerMovement', this.playerData, (ack) => {
+      if (ack) {
+        console.log('Server received playerMovement event:', ack)
+      } else {
+        console.warn('Server did not acknowledge playerMovement event')
+      }
+    })
+    //In your main game logic, where you handle socket events...
+    socket.on('otherPlayerMovement', (playersData) => {
+      Object.keys(playersData).forEach((playerId) => {
+        if (playerId !== socket.id) {
+          let otherPlayer = this.playerManager.getPlayerById(playerId)
+          if (!otherPlayer) {
+            // Create player and add their mesh to the scene
+            otherPlayer = this.playerManager.updateOrCreatePlayer(
+              playerId,
+              playersData[playerId]
+            )
+            this.scene.add(otherPlayer.getMesh()) // Assuming 'this.scene' is your Three.js scene
+          } else {
+            // Update existing player
+            otherPlayer.update(playersData[playerId])
+          }
+        }
+      })
+    })
 
     this.updateMiniConsole('Init')
   }
@@ -187,6 +219,7 @@ class ThreeJsGame {
     }
     return needResize
   }
+
   render(now) {
     kd.tick()
     now *= 0.001
@@ -207,6 +240,37 @@ class ThreeJsGame {
 
     this.renderer.render(this.scene, this.camera)
     requestAnimationFrame(this.render.bind(this))
+  }
+}
+
+class PlayerManager {
+  constructor(playerData) {
+    this.players = {}
+    this.playerData = playerData
+  }
+
+  // Method to create or update a player
+  updateOrCreatePlayer(playerId, playerData) {
+    let player
+    if (this.players[playerId]) {
+      // If player already exists, update its data
+      player = this.players[playerId]
+      player.update(playerData) // Assumes that the player class has an update method.
+    } else {
+      // If player does not exist, create a new one
+      player = new Player(playerData) // Assumes you have a Player class
+      this.players[playerId] = player
+    }
+    return player // Returning the player object here
+  }
+  // Method to remove a player
+  removePlayer(playerId) {
+    delete this.players[playerId]
+  }
+
+  // Method to get a player by ID
+  getPlayerById(playerId) {
+    return this.players[playerId]
   }
 }
 
