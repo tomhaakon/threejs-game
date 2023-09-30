@@ -2,6 +2,9 @@
 import * as THREE from 'three'
 import { handleAnimation } from '../animation/handleAnimation'
 import { miniConsole } from '../miniConsole'
+import { io } from 'socket.io-client'
+import { Player } from '../modules/player.js'
+import { socket } from '../socket.js'
 export class moveModel {
   constructor(modelRoot) {
     this.modelRoot = modelRoot
@@ -13,11 +16,11 @@ export class moveModel {
     this.currentMoveSpeed = 0
     this.currentRotateSpeed = 0
 
-    this.minMoveSpeed = 0.1
-    this.rotateSpeed = 0.01
+    this.minMoveSpeed = 0.7
+    this.rotateSpeed = 0.05
 
-    this.maxMoveSpeed = 0.3
-    this.maxRotateSpeed = 0.02
+    this.maxMoveSpeed = 1
+    this.maxRotateSpeed = 0.08
 
     this.prevPosition = modelRoot.position.clone()
     this.prevTimestamp = performance.now()
@@ -25,6 +28,13 @@ export class moveModel {
 
     this.activeKeys = new Set()
     this.setupKeyboardListeners()
+    this.player = new Player(0, 0, 0) // initialize with whatever position you need
+
+    //this.socket = io.connect('http://localhost:3000')
+
+    // this.socket.on('updatePlayers', (players) => {
+    //   // Update the positions of all players in the scene
+    // })
   }
 
   setMixerInfos(mixerInfos) {
@@ -137,7 +147,8 @@ export class moveModel {
       this.modelRoot.position.add(forwardVector)
     }
     if (moveDirection === 'Reverse') {
-      this.modelRoot.position.sub(forwardVector.negate())
+      //console.log('Reversing with speed:', moveSpeed)
+      this.modelRoot.position.sub(forwardVector.clone())
     }
     if (rotateDirection === 'RotateLeft') {
       this.modelRoot.rotation.y += this.currentRotateSpeed
@@ -145,8 +156,17 @@ export class moveModel {
     if (rotateDirection === 'RotateRight') {
       this.modelRoot.rotation.y -= this.currentRotateSpeed
     }
+    const newPosition = {
+      x: this.modelRoot.position.x,
+      y: this.modelRoot.position.y,
+      z: this.modelRoot.position.z,
+    }
+    this.updatePlayerPosition(newPosition)
   }
-
+  updatePlayerPosition(position) {
+    //  console.log(`Sending position to server:`, position)
+    socket.emit('playerPosition', position) // Make sure 'socket' is accessible
+  }
   setupKeyboardListeners() {
     document.addEventListener('keydown', (event) => {
       if (['w', 'a', 's', 'd'].includes(event.key)) {

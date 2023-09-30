@@ -1,52 +1,42 @@
-// Server.js
+//server.js
 const express = require('express')
-const cors = require('cors')
 const http = require('http')
-const { Server } = require('socket.io')
+const socketIo = require('socket.io')
+const cors = require('cors')
 
 const app = express()
-
-app.use(
-  cors({
-    origin: [
-      'https://threejs-game.onrender.com',
-      'https://game.tomhaakon.com',
-      'http://localhost:5173',
-    ],
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['my-custom-header'],
-    credentials: true,
-  })
-)
-
 const server = http.createServer(app)
-const io = new Server(server, {
+const io = socketIo(server, {
   cors: {
-    origin: [
-      'https://threejs-game.onrender.com',
-      'http://localhost:5173',
-      'https://game.tomhaakon.com',
-    ],
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST'],
-    allowedHeaders: ['my-custom-header'],
     credentials: true,
   },
 })
 
-let userCount = 0
+app.use(express.static('public'))
+app.use(cors())
+
+const players = {} // Data structure to hold all players' positions
 
 io.on('connection', (socket) => {
-  console.log('User connected')
-  userCount++
-  io.emit('updateUserCount', userCount)
+  console.log('a user connected', socket.id)
+
+  players[socket.id] = { x: 0, y: 0, z: 0 } // Initialize player data
+
+  io.emit('newPlayer', { socketId: socket.id, x: 0, y: 0, z: 0 }) // Broadcast new player with socketId
+
+  socket.on('playerPosition', (position) => {
+    console.log(`Received position from ${socket.id}:`, position)
+    players[socket.id] = position // Update the position of the player
+    io.emit('updatePlayers', players) // Broadcast updated positions to all clients
+  })
 
   socket.on('disconnect', () => {
-    console.log('User disconnected')
-    userCount--
-    io.emit('updateUserCount', userCount)
+    console.log('user disconnected', socket.id)
+    delete players[socket.id] // Remove disconnected player from the players object
+    io.emit('playerDisconnected', socket.id) // Notify all clients about the disconnected player
   })
 })
 
-server.listen(3000, () => {
-  console.log('Server is running on port 3000')
-})
+server.listen(3000, () => console.log('listening on *:3000'))

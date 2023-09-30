@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as detectIt from 'detect-it'
 import * as kd from 'keydrown'
+import { FPSMeter } from './js/utils/fpsMeter' // Assuming you saved FPSMeter as a separate module
 
 import { lightManager } from './js/enviroment/light' // fil for hjelp til å se hvor lyset kommer fra
 import { touchControls } from './js/controls/touchControls' // touch
@@ -15,14 +16,29 @@ import { collisionManager } from './js/collisionManager' // kollisjon til vegg
 import { miniConsole } from './js/miniConsole'
 import { notifyScreen } from './js/notifyScreen.js' // fil for kun for hjelp til debug
 import { sendStatus } from './js/handleStatus.js' // fil for debug hjelp
-
+import SceneManager from './js/enviroment/sceneManager.js'
+import { ModelPlayer } from './js/modules/modelPlayer.js'
+import { Player } from './js/modules/player.js'
+import { PlayerManager } from './js/modules/playerManager'
 class ThreeJsGame {
   constructor() {
     //? canvas
+    const sceneManager = SceneManager
+    this.playerManager = new PlayerManager()
+    this.scene = sceneManager.getScene()
+    this.fpsMeter = new FPSMeter()
     this.miniConsole = new miniConsole()
     this.canvas = document.querySelector('#c')
-    this.aspect = this.canvas.clientWidth / this.canvas.clientHeight
+    this.fps = 35
+
+    this.canvas.width = window.innerWidth / 2
+    this.canvas.height = window.innerHeight / 2
+    this.canvas.style.width = '100%'
+    this.canvas.style.height = '100%'
+    //this.aspect = this.canvas.clientWidth / this.canvas.clientHeight
     this.renderer = this.initializeRenderer(this.canvas)
+    this.pixelRatio = window.devicePixelRatio // For High-DPI Displays
+    this.maxPixelRatio = 1 // Or whatever you choose
 
     //? loader
     const { manager, loadingElem } = this.initializeLoadingManager()
@@ -56,9 +72,10 @@ class ThreeJsGame {
   }
 
   initializeRenderer(canvas) {
-    const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
+    const renderer = new THREE.WebGLRenderer({ antialias: false, canvas })
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    //  renderer.setPixelRatio(Math.min(this.pixelRatio, this.maxPixelRatio))
     this.updateMiniConsole('initializeRenderer')
 
     return renderer
@@ -77,12 +94,19 @@ class ThreeJsGame {
   }
 
   initializeScene() {
-    const scene = new THREE.Scene()
-    scene.background = new THREE.Color('black')
-    scene.add(this.modelRoot)
-    this.updateMiniConsole('initalizeScene ')
+    // If there is extra initialization logic put it here, otherwise you might not need this method
+    // const otherPlayer = new Player(10, 10, 10) // Set initial position
+    // this.scene.add(otherPlayer.getMesh()) // Add the player’s mesh to the scene
+    // this.scene.add(this.modelRoot)
+    const playerModel = this.modelManager.getPlayerMesh()
+    if (playerModel) {
+      const player = new Player(0, 0, 0, this.modelManager)
+      console.log('Player.getMesh()', player.getMesh()) // Print the player mesh to console
+      this.scene.add(player.getMesh())
+    }
+    this.updateMiniConsole('initializeScene')
 
-    return scene
+    return this.scene // Or you might not need to return anything if the scene is stored in the instance variable
   }
 
   async preload() {
@@ -112,9 +136,22 @@ class ThreeJsGame {
     try {
       await Promise.all(modelPromises)
       this.modelManager.loadedModels = loadedModels
+      // console.warn(loadedModels) // Print loaded models to console
+
+      // Wait for player model to load before initializing
+      const playerModelLoaded = new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+          const playerModel = this.modelManager.getPlayerMesh()
+          if (playerModel) {
+            clearInterval(intervalId)
+            resolve(playerModel)
+          }
+        }, 100) // Check every 100 milliseconds
+      })
+      await playerModelLoaded // Wait for player model to load
       this.initGround()
       this.init()
-      this.updateMiniConsole('Preload')
+      this.initializeScene()
     } catch (error) {
       console.error('Failed to preload resources:', error)
     }
@@ -140,7 +177,7 @@ class ThreeJsGame {
     )
 
     if (this.groundInstance) {
-      console.log('Ground instance is available')
+      //  console.log('Ground instance is available')
       this.wallInstance = this.groundInstance.getWallInstance()
     } else {
       console.error('Ground instance is not available')
@@ -187,26 +224,40 @@ class ThreeJsGame {
     }
     return needResize
   }
-  render(now) {
-    kd.tick()
-    now *= 0.001
-    const deltaTime = now - this.then
-    this.then = now
-    this.animationManager.update(deltaTime)
+  update() {
+    // Use a fixed delta time here
+    const fixedDeltaTime = 1 / 60 // for 60 updates per second
+    this.animationManager.update(fixedDeltaTime)
     this.cameraManager.updateCamera()
     this.collisionManager.checkCollisionWithWall(
       this.modelRoot.position,
       this.wallInstance
     )
+  }
+  render(now) {
+    const fps = this.fpsMeter.update()
+    this.miniConsole.update(`FPS: ${fps}`, 'Left', 'fps') // Adjust placement as needed
 
+    kd.tick()
+    now *= 0.001
     if (this.resizeRendererToDisplaySize(this.renderer)) {
       const canvas = this.renderer.domElement
       const newAspect = canvas.clientWidth / canvas.clientHeight
       this.cameraManager.updateAspectRatio(newAspect)
     }
-
+    this.playerManager.updatePlayerPosition() // Assume this method updates all players
+    this.playerManager.getPlayers().forEach((player) => {
+      if (!this.scene.children.includes(player.getMesh())) {
+        this.scene.add(player.getMesh()) // Add player mesh to scene if not already present
+      }
+      // If you have additional per-frame update logic for players, apply it here
+    })
+    this.update() // call the update method with the fixed delta time
     this.renderer.render(this.scene, this.camera)
-    requestAnimationFrame(this.render.bind(this))
+
+    setTimeout(() => {
+      requestAnimationFrame(this.render.bind(this))
+    }, 1000 / this.fps) // for 30 fps
   }
 }
 

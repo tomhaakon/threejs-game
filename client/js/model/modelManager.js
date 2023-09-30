@@ -7,6 +7,7 @@ export class modelManager {
   constructor(animationManger) {
     this.animationManager = animationManger
     this.loadedModels = {}
+    this.modelsLoadedPromise = this.loadModels()
     this.models = {
       alienBug: {
         tags: ['enemy', 'alien'],
@@ -21,6 +22,15 @@ export class modelManager {
         // loop: true,
       },
     }
+  }
+  async loadModels() {
+    return new Promise((resolve, reject) => {
+      // Here you should implement your model-loading logic
+      // When models are loaded, you call resolve()
+      // If there's an error while loading, you call reject(error)
+      // For example:
+      // loadModel('path/to/model').then(() => resolve()).catch(error => reject(error));
+    })
   }
   addModelsToScene(loadedModels, modelRoot, mixerInfos, mixers, scene) {
     Object.values(loadedModels).forEach((model, ndx) => {
@@ -67,6 +77,7 @@ export class modelManager {
       //action.play()
       mixers.push(mixer)
     })
+    console.log('Models loaded:', this.models)
   }
   prepareModels() {
     Object.values(this.loadedModels).forEach((model) => {
@@ -82,9 +93,7 @@ export class modelManager {
   getPlayerMesh() {
     if (this.loadedModels['alienBug'] && this.loadedModels['alienBug'].gltf) {
       return this.loadedModels['alienBug'].gltf.scene
-    } else {
-      console.error('Player model is not loaded yet.')
-      return null
     }
+    return null // return null if model isn't loaded yet
   }
 }
