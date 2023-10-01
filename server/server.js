@@ -28,7 +28,6 @@ io.on('connection', (socket) => {
   io.emit('userCountUpdate', connectedClients)
 
   players[socket.id] = { x: 0, y: 0, z: 0 } // Initialize player data
-
   io.emit('newPlayer', { socketId: socket.id, x: 0, y: 0, z: 0 }) // Broadcast new player with socketId
 
   socket.on('playerPosition', (position) => {

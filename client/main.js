@@ -12,13 +12,11 @@ import { createGround } from './js/enviroment/createGround' // gulv med textur
 import { cameraManager } from './js/camera/cameraManager' // camera
 import { modelManager } from './js/model/modelManager' // model justering
 import { animationManager } from './js/animation/animationManager' // animasjoner
-import { collisionManager } from './js/collisionManager' // kollisjon til vegg
-import { miniConsole } from './js/miniConsole'
-import { notifyScreen } from './js/notifyScreen.js' // fil for kun for hjelp til debug
-import { sendStatus } from './js/handleStatus.js' // fil for debug hjelp
+import { collisionManager } from './js/enviroment/collisionManager' // kollisjon til vegg
+import { miniConsole } from './js/utils/miniConsole'
 import SceneManager from './js/enviroment/sceneManager.js'
-import { ModelPlayer } from './js/modules/modelPlayer.js'
-import { Player } from './js/modules/player.js'
+// import { ModelPlayer } from './js/modules/modelPlayer.js'
+// import { Player } from './js/modules/player.js'
 import { PlayerManager } from './js/modules/playerManager'
 class ThreeJsGame {
   constructor() {

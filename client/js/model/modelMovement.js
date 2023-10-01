@@ -1,10 +1,10 @@
 //moveModel.js
 import * as THREE from 'three'
 import { handleAnimation } from '../animation/handleAnimation'
-import { miniConsole } from '../miniConsole'
+import { miniConsole } from '../utils/miniConsole'
 import { io } from 'socket.io-client'
 import { Player } from '../modules/player.js'
-import { socket } from '../socket.js'
+import { socket } from '../../network/socket.js'
 export class moveModel {
   constructor(modelRoot) {
     this.modelRoot = modelRoot

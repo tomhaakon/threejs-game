@@ -16,7 +16,6 @@ export class FPSMeter {
       this.frameCount = 0
       this.lastTime = currentTime
     }
-
     return this.fps
   }
 }

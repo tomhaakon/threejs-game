@@ -13,9 +13,8 @@ export class Player {
     const loader = new GLTFLoader()
 
     loader.load(
-      'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/alien-bug.glb', // replace this with the path to your model
+      'https://tomhaakonbucket.s3.eu-north-1.amazonaws.com/alien-bug.glb',
       (gltf) => {
-        // called when the resource is loaded
         this.mesh.add(gltf.scene)
       },
       undefined,
@@ -23,7 +22,6 @@ export class Player {
         console.error('An error happened while loading the model', error)
       }
     )
-    //  console.log('ModelPlayer created with position:', x, y, z)
   }
 
   setPosition(x, y, z) {

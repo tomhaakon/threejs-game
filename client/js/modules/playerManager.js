@@ -20,8 +20,6 @@ export class PlayerManager {
     delete this.players[id]
   }
   getPlayers() {
-    return Object.values(this.players) // Returns an array of all player objects
+    return Object.values(this.players)
   }
-
-  // Add more methods as needed
 }

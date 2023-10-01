@@ -16,7 +16,6 @@ export class miniConsole {
 
     if (!this.messages[id]) {
       const newMessage = document.createElement('div')
-      // Insert newMessage at the top of consoleElement
       consoleElement.insertBefore(newMessage, consoleElement.firstChild)
       this.messages[id] = newMessage
     }

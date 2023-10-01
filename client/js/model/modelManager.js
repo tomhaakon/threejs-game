@@ -7,7 +7,7 @@ export class modelManager {
   constructor(animationManger) {
     this.animationManager = animationManger
     this.loadedModels = {}
-    this.modelsLoadedPromise = this.loadModels()
+
     this.models = {
       alienBug: {
         tags: ['enemy', 'alien'],
@@ -23,15 +23,7 @@ export class modelManager {
       },
     }
   }
-  async loadModels() {
-    return new Promise((resolve, reject) => {
-      // Here you should implement your model-loading logic
-      // When models are loaded, you call resolve()
-      // If there's an error while loading, you call reject(error)
-      // For example:
-      // loadModel('path/to/model').then(() => resolve()).catch(error => reject(error));
-    })
-  }
+
   addModelsToScene(loadedModels, modelRoot, mixerInfos, mixers, scene) {
     Object.values(loadedModels).forEach((model, ndx) => {
       this.animationManager.addMixerForModel(model)

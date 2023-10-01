@@ -5,7 +5,7 @@ export class ModelPlayer {
     this.y = y
     this.z = z
     this.modelManager = modelManager
-    this._mesh = this.initializePlayerModel() // Changed 'mesh' to '_mesh'
+    this._mesh = this.initializePlayerModel()
   }
 
   initializePlayerModel() {
@@ -14,7 +14,6 @@ export class ModelPlayer {
     return playerModel
   }
 
-  // Getter method for the 'mesh' property
   getMesh() {
     return this._mesh // Return the '_mesh' property
   }
