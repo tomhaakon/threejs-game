@@ -36,7 +36,7 @@ socket.on('userCountUpdate', (userCount) => {
 })
 // Handling new player connection
 socket.on('newPlayer', (playerData) => {
-  console.log('New player data received:', playerData)
+  //console.log('New player data received:', playerData)
   if (
     playerData.socketId !== socket.id &&
     !otherPlayers.has(playerData.socketId)
@@ -44,7 +44,7 @@ socket.on('newPlayer', (playerData) => {
     const newPlayer = new Player(playerData.x, playerData.y, playerData.z)
     scene.add(newPlayer.getMesh())
     otherPlayers.set(playerData.socketId, newPlayer)
-    console.log('Player added:', newPlayer)
+    //   console.log('Player added:', newPlayer)
   }
 })
 // Handling player disconnection
@@ -66,7 +66,7 @@ socket.on('playerPosition', (position) => {
 
 // Handling position updates from server
 socket.on('updatePlayers', (playersData) => {
-  console.log('Raw players data received:', playersData)
+  //console.log('Raw players data received:', playersData)
 
   // Check if playersData is a non-null object before proceeding
   if (playersData && typeof playersData === 'object') {
@@ -74,8 +74,7 @@ socket.on('updatePlayers', (playersData) => {
       if (socketId !== socket.id) {
         let player = otherPlayers.get(socketId)
 
-        // Log the specific playerData for debugging
-        console.log(`Player data for socket ${socketId}:`, playerData)
+        // console.log(`Player data for socket ${socketId}:`, playerData)
 
         if (player) {
           // If player exists, update position
@@ -85,7 +84,7 @@ socket.on('updatePlayers', (playersData) => {
           player = new Player(playerData.x, playerData.y, playerData.z)
           scene.add(player.getMesh())
           otherPlayers.set(socketId, player)
-          console.log('New player added:', player)
+          //  console.log('New player added:', player)
         }
       }
     })

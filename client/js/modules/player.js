@@ -23,7 +23,7 @@ export class Player {
         console.error('An error happened while loading the model', error)
       }
     )
-    console.log('ModelPlayer created with position:', x, y, z)
+    //  console.log('ModelPlayer created with position:', x, y, z)
   }
 
   setPosition(x, y, z) {

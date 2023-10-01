@@ -77,7 +77,7 @@ export class modelManager {
       //action.play()
       mixers.push(mixer)
     })
-    console.log('Models loaded:', this.models)
+    //   console.log('Models loaded:', this.models)
   }
   prepareModels() {
     Object.values(this.loadedModels).forEach((model) => {
