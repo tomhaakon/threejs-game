@@ -1,16 +1,10 @@
 //moveModel.js
 import * as THREE from 'three'
 import { handleAnimation } from '../animation/handleAnimation'
-<<<<<<< HEAD
-import { miniConsole } from '../miniConsole'
-import socket from '../socket'
-
-=======
 import { miniConsole } from '../utils/miniConsole'
 import { io } from 'socket.io-client'
 import { Player } from '../modules/player.js'
 import { socket } from '../../network/socket.js'
->>>>>>> multiplayermodule
 export class moveModel {
   constructor(modelRoot) {
     this.modelRoot = modelRoot
@@ -34,10 +28,6 @@ export class moveModel {
 
     this.activeKeys = new Set()
     this.setupKeyboardListeners()
-<<<<<<< HEAD
-
-    // this.socket = socket
-=======
     this.player = new Player(0, 0, 0) // initialize with whatever position you need
 
     //this.socket = io.connect('http://localhost:3000')
@@ -45,7 +35,6 @@ export class moveModel {
     // this.socket.on('updatePlayers', (players) => {
     //   // Update the positions of all players in the scene
     // })
->>>>>>> multiplayermodule
   }
 
   setMixerInfos(mixerInfos) {
@@ -159,15 +148,10 @@ export class moveModel {
 
     if (moveDirection === 'Run') {
       this.modelRoot.position.add(forwardVector)
-<<<<<<< HEAD
-    } else if (moveDirection === 'Reverse') {
-      this.modelRoot.position.sub(forwardVector.negate())
-=======
     }
     if (moveDirection === 'Reverse') {
       //console.log('Reversing with speed:', moveSpeed)
       this.modelRoot.position.sub(forwardVector.clone())
->>>>>>> multiplayermodule
     }
     if (moveDirection === 'Run' || moveDirection === 'Reverse') {
       socket.emit('playerMovement', {
@@ -190,23 +174,6 @@ export class moveModel {
     if (rotateDirection === 'RotateRight') {
       this.modelRoot.rotation.y -= this.currentRotateSpeed
     }
-<<<<<<< HEAD
-    // Add emission for Rotation
-    if (rotateDirection === 'RotateLeft' || rotateDirection === 'RotateRight') {
-      socket.emit('playerMovement', {
-        position: {
-          x: this.modelRoot.position.x,
-          y: this.modelRoot.position.y,
-          z: this.modelRoot.position.z,
-        },
-        rotation: {
-          x: this.modelRoot.rotation.x,
-          y: this.modelRoot.rotation.y,
-          z: this.modelRoot.rotation.z,
-        },
-      })
-    }
-=======
     const newPosition = {
       x: this.modelRoot.position.x,
       y: this.modelRoot.position.y,
@@ -217,7 +184,6 @@ export class moveModel {
   updatePlayerPosition(position) {
     //  console.log(`Sending position to server:`, position)
     socket.emit('playerPosition', position) // Make sure 'socket' is accessible
->>>>>>> multiplayermodule
   }
   setupKeyboardListeners() {
     document.addEventListener('keydown', (event) => {

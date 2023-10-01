@@ -175,32 +175,7 @@ class ThreeJsGame {
       console.error('Ground instance is not available')
     }
 
-    socket.emit('playerMovement', this.playerData, (ack) => {
-      if (ack) {
-        console.log('Server received playerMovement event:', ack)
-      } else {
-        console.warn('Server did not acknowledge playerMovement event')
-      }
-    })
     //In your main game logic, where you handle socket events...
-    socket.on('otherPlayerMovement', (playersData) => {
-      Object.keys(playersData).forEach((playerId) => {
-        if (playerId !== socket.id) {
-          let otherPlayer = this.playerManager.getPlayerById(playerId)
-          if (!otherPlayer) {
-            // Create player and add their mesh to the scene
-            otherPlayer = this.playerManager.updateOrCreatePlayer(
-              playerId,
-              playersData[playerId]
-            )
-            this.scene.add(otherPlayer.getMesh()) // Assuming 'this.scene' is your Three.js scene
-          } else {
-            // Update existing player
-            otherPlayer.update(playersData[playerId])
-          }
-        }
-      })
-    })
 
     this.updateMiniConsole('Init')
   }
