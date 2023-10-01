@@ -94,16 +94,6 @@ class ThreeJsGame {
   }
 
   initializeScene() {
-    // If there is extra initialization logic put it here, otherwise you might not need this method
-    // const otherPlayer = new Player(10, 10, 10) // Set initial position
-    // this.scene.add(otherPlayer.getMesh()) // Add the player’s mesh to the scene
-    // this.scene.add(this.modelRoot)
-    const playerModel = this.modelManager.getPlayerMesh()
-    if (playerModel) {
-      const player = new Player(0, 0, 0, this.modelManager)
-      console.log('Player.getMesh()', player.getMesh()) // Print the player mesh to console
-      this.scene.add(player.getMesh())
-    }
     this.updateMiniConsole('initializeScene')
 
     return this.scene // Or you might not need to return anything if the scene is stored in the instance variable
@@ -248,7 +238,7 @@ class ThreeJsGame {
     this.playerManager.updatePlayerPosition() // Assume this method updates all players
     this.playerManager.getPlayers().forEach((player) => {
       if (!this.scene.children.includes(player.getMesh())) {
-        this.scene.add(player.getMesh()) // Add player mesh to scene if not already present
+        //    this.scene.add(player.getMesh()) // Add player mesh to scene if not already present
       }
       // If you have additional per-frame update logic for players, apply it here
     })
@@ -264,7 +254,7 @@ class ThreeJsGame {
 const game = new ThreeJsGame()
 game.preload().then(() => {
   game.main()
-  game.miniConsole.update('Game loaded')
+  game.miniConsole.update('Game loaded', 'Right', 6)
   game.miniConsole.update(
     `Device: ${detectIt.deviceType}`,
     'Left',

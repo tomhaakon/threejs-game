@@ -16,12 +16,14 @@ const io = socketIo(server, {
 
 app.use(express.static('public'))
 app.use(cors())
-
+let numberOfUsers = 0
 const players = {} // Data structure to hold all players' positions
 
 io.on('connection', (socket) => {
-  console.log('a user connected', socket.id)
-
+  console.log('A user connected', socket.id)
+  console.log('Connected clients:', Object.keys(io.sockets.sockets).length) // Log total connected sockets
+  numberOfUsers++
+  io.emit('userCountUpdate', numberOfUsers)
   players[socket.id] = { x: 0, y: 0, z: 0 } // Initialize player data
 
   io.emit('newPlayer', { socketId: socket.id, x: 0, y: 0, z: 0 }) // Broadcast new player with socketId
@@ -33,7 +35,10 @@ io.on('connection', (socket) => {
   })
 
   socket.on('disconnect', () => {
-    console.log('user disconnected', socket.id)
+    numberOfUsers--
+    io.emit('userCountUpdate', numberOfUsers)
+    console.log('A user disconnected', socket.id)
+    console.log('Remaining clients:', Object.keys(io.sockets.sockets).length) // Log total remaining sockets
     delete players[socket.id] // Remove disconnected player from the players object
     io.emit('playerDisconnected', socket.id) // Notify all clients about the disconnected player
   })

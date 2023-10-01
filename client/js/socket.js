@@ -5,8 +5,10 @@ import { Player } from './modules/player.js'
 import SceneManager from './enviroment/sceneManager.js'
 import { modelManager } from './model/modelManager.js'
 import { ModelPlayer } from './modules/modelPlayer.js'
+import { miniConsole } from './miniConsole.js'
 
 const scene = SceneManager.getScene()
+const miniConsoleInstance = new miniConsole()
 //import { scene } from '../main.js'
 const playerManager = new PlayerManager()
 const otherPlayers = new Map()
@@ -23,6 +25,14 @@ socket.on('connect', async () => {
     console.error('Failed to load models:', error)
     // Handle model loading failure here
   }
+})
+socket.on('userCountUpdate', (userCount) => {
+  // Update the mini console with the number of connected users
+  miniConsoleInstance.update(
+    `Connected Users: ${userCount}`,
+    'Left',
+    'userCount'
+  )
 })
 // Handling new player connection
 socket.on('newPlayer', (playerData) => {

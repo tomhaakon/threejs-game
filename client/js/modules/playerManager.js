@@ -1,3 +1,4 @@
+//playermanager.js
 import { Player } from './player'
 
 export class PlayerManager {
