@@ -7,6 +7,7 @@ export class modelManager {
   constructor(animationManger) {
     this.animationManager = animationManger
     this.loadedModels = {}
+
     this.models = {
       alienBug: {
         tags: ['enemy', 'alien'],
@@ -22,6 +23,7 @@ export class modelManager {
       },
     }
   }
+
   addModelsToScene(loadedModels, modelRoot, mixerInfos, mixers, scene) {
     Object.values(loadedModels).forEach((model, ndx) => {
       this.animationManager.addMixerForModel(model)
@@ -67,6 +69,7 @@ export class modelManager {
       //action.play()
       mixers.push(mixer)
     })
+    //   console.log('Models loaded:', this.models)
   }
   prepareModels() {
     Object.values(this.loadedModels).forEach((model) => {
@@ -82,9 +85,7 @@ export class modelManager {
   getPlayerMesh() {
     if (this.loadedModels['alienBug'] && this.loadedModels['alienBug'].gltf) {
       return this.loadedModels['alienBug'].gltf.scene
-    } else {
-      console.error('Player model is not loaded yet.')
-      return null
     }
+    return null // return null if model isn't loaded yet
   }
 }

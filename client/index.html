@@ -16,7 +16,11 @@
   </head>
   <body>
     <!-- canvas -->
-    <canvas id="c"></canvas>
+    <div id="game-container">
+      <div id="leftConsole"></div>
+      <canvas id="c"></canvas>
+      <div id="rightConsole"></div>
+    </div>
 <!-- loading -->
 <div id="loading">
   <div>
@@ -25,8 +29,7 @@
   </div>
 </div>
 <!-- user count box -->
-<div id="rightConsole"></div>
-<div id="leftConsole">
+
   
 </div>
     <!-- status icon -->
@@ -40,6 +43,4 @@
     <div id="notifyBox">    </div></div>
   </body>
   <script type="module" src="./main.js"></script>
-<script type="module" src="js/socket.js"></script>
-
   </html>

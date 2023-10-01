@@ -3,15 +3,19 @@ body {
   height: 100%;
   margin: 0;
   color: white;
+  background-color: black;
   font-family: monospace;
   overflow: hidden; /* Ensures the page doesn't scroll */
 
   touch-action: none; /* This prevents the default pan and zoom of the browser on touch */
 }
 #c {
-  width: 100%;
-  height: 100%;
+  position: relative; /* Set to relative to be a positioning parent */
+  max-width: 450px;
+  max-height: 800px;
+  margin: auto;
   display: block;
+  overflow: hidden; /* Hide the overflow to keep consoles within bounds */
 }
 
 #notifyBox {
@@ -73,17 +77,14 @@ body {
 
 #leftConsole {
   background-color: transparent;
-  pointer-events: none;
-  user-select: none;
   padding: 10px;
-  position: fixed;
+  position: absolute; /* Position it absolutely within #c */
   top: 0;
   left: 0;
   width: 200px;
   max-height: 300px;
   overflow-y: auto;
   color: white;
-  padding: 10px;
   font-family: 'Courier New', Courier, monospace;
   font-size: 12px;
   text-align: left;
@@ -91,18 +92,17 @@ body {
   opacity: 0.9;
   border-bottom-left-radius: 8px;
 }
+
 #rightConsole {
   background-color: transparent;
-  pointer-events: none;
-  user-select: none;
-  position: fixed;
+  padding: 10px;
+  position: absolute; /* Position it absolutely within #c */
   top: 0;
   right: 0;
   width: 200px;
   max-height: 300px;
   overflow-y: auto;
   color: limegreen;
-  padding: 10px;
   font-family: 'Courier New', Courier, monospace;
   font-size: 12px;
   text-align: right;
@@ -110,7 +110,6 @@ body {
   opacity: 0.9;
   border-bottom-left-radius: 8px;
 }
-
 @keyframes progressanim {
   0% {
     background-position: 50px 50px;

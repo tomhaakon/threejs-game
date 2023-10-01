@@ -1,67 +1,50 @@
-// server.js
+//server.js
 const express = require('express')
 const http = require('http')
-const { Server } = require('socket.io')
+const socketIo = require('socket.io')
 const cors = require('cors')
-const { time } = require('console')
 
 const app = express()
 const server = http.createServer(app)
-
-// const corsOrigins =
-//   process.env.NODE_ENV === 'production'
-//     ? ['https://threejs-game.onrender.com', 'https://game.tomhaakon.com']
-//     : ['http://localhost:3000', 'http://localhost:5173']
-const corsOrigins =
-  process.env.NODE_ENV === 'production'['http://localhost:5173']
-// app.use(
-//   cors({
-//     origin: 'http://localhost:3000',
-//     methods: ['GET', 'POST'],
-//     allowedHeaders: ['my-custom-header'],
-//     credentials: true,
-//   })
-// )
-
-const io = new Server(server, {
+const io = socketIo(server, {
   cors: {
-    origin: corsOrigins,
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST'],
-    allowedHeaders: ['my-custom-header'],
     credentials: true,
   },
 })
 
-let players = {}
-const timestampSent = Date.now()
+app.use(express.static('public'))
+app.use(cors())
+
+const players = {} // Data structure to hold all players' positions
+
 io.on('connection', (socket) => {
-  console.log('User connected', timestampSent)
+  console.log('A user connected', socket.id)
 
-  // socket.on('playerMovement', (playerData) => {
-  //   // console.log('Player Moved: ', playerData)
-  //   players[socket.id] = playerData
-  //   socket.broadcast.emit('otherPlayerMovement', players)
-  // })
+  const connectedClients = io.sockets.sockets.size
+  console.log('Connected clients:', connectedClients)
 
-  socket.on('playerMovement', (playerData, callback) => {
-    console.log(`Player ${socket.id} Moved: `, playerData)
-    players[socket.id] = playerData // Update the server's player data
-    io.emit('otherPlayerMovement', players) // Broadcast updated player list to all clients
-    callback && callback('Received playerMovement event')
-  })
+  io.emit('userCountUpdate', connectedClients)
 
-  socket.on('otherPlayerMovement', (data, callback) => {
-    console.log('Received otherPlayerMovement:', data)
-    callback && callback('Received otherPlayerMovement event')
+  players[socket.id] = { x: 0, y: 0, z: 0 } // Initialize player data
+  io.emit('newPlayer', { socketId: socket.id, x: 0, y: 0, z: 0 }) // Broadcast new player with socketId
+
+  socket.on('playerPosition', (position) => {
+    //   console.log(`Received position from ${socket.id}:`, position)
+    players[socket.id] = position // Update the position of the player
+    io.emit('updatePlayers', players) // Broadcast updated positions to all clients
   })
 
   socket.on('disconnect', () => {
-    console.log('User disconnected')
-    delete players[socket.id]
-    io.emit('playerDisconnected', socket.id)
+    const remainingClients = io.sockets.sockets.size
+    console.log('Remaining clients:', remainingClients)
+    console.log('A user disconnected', socket.id)
+
+    io.emit('userCountUpdate', remainingClients)
+    delete players[socket.id] // Remove disconnected player from the players object
+    io.emit('playerDisconnected', socket.id) // Notify all clients about the disconnected player
   })
 })
 
-server.listen(3000, () => {
-  console.log('Server is running on port 3000')
-})
+server.listen(3000, () => console.log('listening on *:3000'))

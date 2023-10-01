@@ -14,19 +14,19 @@ export class handleAnimation {
     switch (name) {
       case 'Idle':
         actionToPlay = actions[2]
-        actionToPlay.timeScale = 2.0
+        actionToPlay.timeScale = 3.5
         break
       case 'Run':
         actionToPlay = actions[3]
-        actionToPlay.timeScale = 1.0
+        actionToPlay.timeScale = 2.5
         break
       case 'Rotate':
         actionToPlay = actions[3]
-        actionToPlay.timeScale = 2.0
+        actionToPlay.timeScale = 3.5
         break
       case 'Reverse':
         actionToPlay = actions[3]
-        actionToPlay.timeScale = -1
+        actionToPlay.timeScale = -2.5
         break
     }
 
