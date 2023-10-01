@@ -15,8 +15,7 @@ import { animationManager } from './js/animation/animationManager' // animasjone
 import { collisionManager } from './js/enviroment/collisionManager' // kollisjon til vegg
 import { miniConsole } from './js/utils/miniConsole'
 import SceneManager from './js/enviroment/sceneManager.js'
-// import { ModelPlayer } from './js/modules/modelPlayer.js'
-// import { Player } from './js/modules/player.js'
+
 import { PlayerManager } from './js/modules/playerManager'
 class ThreeJsGame {
   constructor() {
@@ -94,7 +93,7 @@ class ThreeJsGame {
   initializeScene() {
     this.updateMiniConsole('initializeScene')
 
-    return this.scene // Or you might not need to return anything if the scene is stored in the instance variable
+    return this.scene //
   }
 
   async preload() {
@@ -121,10 +120,10 @@ class ThreeJsGame {
           )
         })
     )
+
     try {
       await Promise.all(modelPromises)
       this.modelManager.loadedModels = loadedModels
-      // console.warn(loadedModels) // Print loaded models to console
 
       // Wait for player model to load before initializing
       const playerModelLoaded = new Promise((resolve) => {
