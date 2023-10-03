@@ -28,8 +28,8 @@ class ThreeJsGame {
     this.canvas = document.querySelector('#c')
     this.fps = 35
 
-    this.canvas.width = window.innerWidth / 2
-    this.canvas.height = window.innerHeight / 2
+    this.canvas.width = window.innerWidth // / 2
+    this.canvas.height = window.innerHeight // / 2
     this.canvas.style.width = '100%'
     this.canvas.style.height = '100%'
     //this.aspect = this.canvas.clientWidth / this.canvas.clientHeight
@@ -45,7 +45,7 @@ class ThreeJsGame {
     this.modelRoot = new THREE.Object3D()
     this.animationManager = new animationManager()
     this.modelManager = new modelManager(this.animationManager)
-    this.playerData = this.modelRoot
+
     // console.log(this.modelRoot.position)
     this.scene = this.initializeScene()
     //?
@@ -66,11 +66,9 @@ class ThreeJsGame {
 
     //? light
     this.lightManager = new lightManager(this.scene)
-    this.then = 0
 
-    //this.socket = socket
-    //console.log(this.playerData)
-    this.playerManager = new PlayerManager(this.playerData)
+    this.then = 0
+    this.playerManager = new PlayerManager(this.modelRoot)
   }
 
   initializeRenderer(canvas) {
