@@ -16,41 +16,8 @@ https://github.com/rafgraph/detect-it
 Keydrown
 https://jeremyckahn.github.io/keydrown/
 
-Nipplejs
-For touch joystick control for touch screen
-
-Model 
+Model
 https://www.mixamo.com/#/
-
-## custom functions for debug
-
-### sendError
-
-import
-
-```
-import { sendError } from "./errorHandler.js";
-```
-
-use
-
-```
-sendError("title", "content");
-```
-
-### handleStatus
-
-import
-
-```
-import { sendStatus } from './handleStatus.js'
-```
-
-bruk
-
-```
- sendStatus(true)
-```
 
 # install threejs-game locally
 ```
@@ -60,17 +27,14 @@ npm run start ./server
 npm run dev ./client
 ```
 
-index.html
-style.css
-main.js
 
-# init
+# install vite
 ## vite
 ```
 npm install --save-dev vite
 npx vite
 ```
-## three.js
+##  install three.js
 ```
 npm install --save three
 ```
