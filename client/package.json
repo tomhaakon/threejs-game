@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "vite": "^4.4.9"
+    "vite": "^4.5.3"
   },
   "dependencies": {
     "detect-it": "^4.0.1",
